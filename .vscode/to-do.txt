@@ -1,0 +1,5 @@
+The Download function works perfectely;
+
+I need to work on the upload one, somehow realizing how trivial uploading to the bot is, we might as well create our own library since it really easy just curl, json is being used to handle big data.
+
+
