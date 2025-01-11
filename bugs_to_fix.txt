@@ -1,8 +1,5 @@
 When using the /download command, if the link is not valid, empty, or dummy the downnload does not fail and the thread does not detach, this must be fixed.
 
-The status of curlUpload() function in the networking section is uknown it must be put to test or even scrapped, since it is irrelevant, telegram is the main medium;
-
-
 Impliment a functionality where the command /execute is with a bianry, it downloads it in a seperate thread, and until that threads finishes, it joins it and then executes it.
 
 Impliment an ls, rm, cd, and /shell [command] functionalities.

@@ -24,7 +24,6 @@ namespace trat
     void writeCallback(void *Data, size_t SizeDataElement, size_t NumberDataElements, FILE *outputStream);
 
     NetworkingResponse curlDownload(const char *Url, const char *OutputFilePath);
-    NetworkingResponse curlUpload(const char *FilePath, const char *TargetUrl);
 }
 
 #endif //NETWORKING_HPP

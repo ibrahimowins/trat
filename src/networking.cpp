@@ -100,67 +100,6 @@ namespace trat
 }
 
 
-  NetworkingResponse curlUpload(const char* FilePath, const char* TargetUrl)
-{
-    CURL* curl;
-    CURLcode res;
-    FILE* fp;
-    struct stat file_info;
-    NetworkingResponse response = {false, nullptr, 0.0};  // Initialize with default values
-    clock_t start, end;
-
-    if (stat(FilePath, &file_info))
-    {
-        response.errorLog = strdup("Failed to stat file");
-        return response;
-    }
-
-    curl = curl_easy_init();
-    if (!curl)
-    {
-        response.errorLog = strdup("Failed to initialize curl");
-        return response;
-    }
-
-    fp = fopen(FilePath, "rb");
-    if (!fp)
-    {
-        curl_easy_cleanup(curl);
-        response.errorLog = strdup("Failed to open file");
-        return response;
-    }
-
-    curl_easy_setopt(curl, CURLOPT_URL, TargetUrl);
-    curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
-    curl_easy_setopt(curl, CURLOPT_READDATA, fp);
-    curl_easy_setopt(curl, CURLOPT_INFILESIZE_LARGE, (curl_off_t)file_info.st_size);
-
-    start = clock();
-
-    res = curl_easy_perform(curl);
-
-    end = clock();
-
-    response.timeInSeconds = ((double)(end - start)) / CLOCKS_PER_SEC;
-
-    if (res != CURLE_OK)
-    {
-        response.errorLog = strdup(curl_easy_strerror(res));
-        response.isSuccessful = false;
-    }
-    else
-    {
-        response.errorLog = strdup("");  // Empty string indicates no error
-        response.isSuccessful = true;
-    }
-
-    fclose(fp);
-    curl_easy_cleanup(curl);
-
-    return response;
-}
-
-
     // Upload a file to Telegram Bot
 
 }
