@@ -40,14 +40,8 @@ namespace trat
                         }
                         else
                         {
-                            if (strstr(message.text, "/pwd"))
-                            {
-                                std::thread([this]() {
-                                    this->sendMessage((this->shell).getCurrentPath());
-                                }).detach();
-                            }
-
-                            this->handleDownloadCommand(message.text);
+                            this -> handleTextBasedCommand(message.text, "/pwd", (this -> shell).getCurrentPath());
+                            this -> handleDownloadCommand(message.text);
                         }
                     }
                 }

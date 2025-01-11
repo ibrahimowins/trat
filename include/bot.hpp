@@ -31,6 +31,9 @@ public:
     bool sendDocument(const char* DocumentPath);
 
     void handleDownloadCommand(const char* Telegram_Message_Text);
+    
+    void handleTextBasedCommand(const char* Telegram_Message_Text, const char* Command,  char* Shell_Function_Callback_Result);
+
     bool downloadFromChat(const char* FileId, const char* FilePath);
     void listen();
 };

@@ -2,6 +2,17 @@
 
 namespace trat
 {
+    void Bot::handleTextBasedCommand(const char* Telegram_Message_Text, const char* Command,  char* Shell_Function_Callback_Result)
+    {
+        if (strstr(Telegram_Message_Text, Command))
+        {
+            std::thread([this, Shell_Function_Callback_Result]() 
+            {
+                this->sendMessage(Shell_Function_Callback_Result);
+            }).detach();
+        }
+
+    }
     void Bot::handleDownloadCommand(const char* Telegram_Message_Text)
     {
         if (auto link = extractDownloadLink(Telegram_Message_Text))
