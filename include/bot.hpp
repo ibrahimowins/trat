@@ -30,6 +30,7 @@ public:
     bool sendPhoto(const char* FilePath);
     bool sendDocument(const char* DocumentPath);
 
+    void handleDownloadCommand(const char* Telegram_Message_Text);
     bool downloadFromChat(const char* FileId, const char* FilePath);
     void listen();
 };

