@@ -2,10 +2,7 @@
 
 namespace trat
 {
-    Shell::Shell(trat::Bot *MasterBot)
-    {
-        masterBot = MasterBot;
-    }
+    Shell::Shell(trat::Bot *MasterBot):masterBot(MasterBot){};
 
     char* Shell::getCurrentPath()
     {

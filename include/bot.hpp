@@ -20,14 +20,13 @@ class Bot
 {
 public:
     telebot_handler_t handle;  
-    char* token;                  // Token for authentication
-    int64_t clientId;             // Client ID for the bot
-    Shell* p_shell;                 // Pointer to Shell class
+    char* token;                 
+    int64_t clientId;
+    Shell shell;                          
 
-    Bot(const char* Token, const int64_t& ClientId);  // Constructor
-    ~Bot();                                           // Destructor
-
-    bool sendMessage(const char* Message);  // Method to send a message
+    Bot(const char* Token, const int64_t& ClientId); 
+    ~Bot();                                          
+    bool sendMessage(const char* Message);  
     bool sendPhoto(const char* FilePath);
     bool sendDocument(const char* DocumentPath);
 

@@ -3,9 +3,10 @@ namespace trat
 {
 
     Bot::Bot(const char* Token, const int64_t& ClientId)
+    :token(strdup(Token)),
+     clientId(ClientId),
+     shell(Shell(this))
     {
-        token = strdup(Token);  // Duplicate the string to manage its lifetime
-        clientId = ClientId;
 
         try
         {
@@ -13,7 +14,6 @@ namespace trat
             {
                 throw std::runtime_error("Failed to create Telebot handler.");
             }
-            p_shell = new Shell(this);
         }
         catch (const std::exception& e)
         {
@@ -31,11 +31,6 @@ namespace trat
         {
             free(token);  // Free the allocated memory for the token
             token = nullptr;
-        }
-        if (p_shell != nullptr)
-        {
-            delete p_shell;
-            p_shell = nullptr;
         }
     }
     bool Bot::downloadFromChat(const char* FileId, const char* FilePath)
