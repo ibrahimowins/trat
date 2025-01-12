@@ -7,7 +7,7 @@
 #include <telebot.h>
 #include <cstdint>
 #include <cstring>  // For strdup
-#include <stdexcept> // For exceptions
+
 #include <thread>
 #include "shell.hpp"
 #include "networking.hpp"
@@ -24,17 +24,18 @@ public:
     int64_t clientId;
     Shell shell;                          
 
-    Bot(const char* Token, const int64_t& ClientId); 
+    Bot(const char* Token, const int64_t& Client_Id); 
     ~Bot();                                          
     bool sendMessage(const char* Message);  
-    bool sendPhoto(const char* FilePath);
-    bool sendDocument(const char* DocumentPath);
+    bool sendPhoto(const char* File_Path);
+    bool sendDocument(const char* Document_Path);
 
     void handleDownloadCommand(const char* Telegram_Message_Text);
     
     void handleTextBasedCommand(const char* Telegram_Message_Text, const char* Command,  char* Shell_Function_Callback_Result);
-
-    bool downloadFromChat(const char* FileId, const char* FilePath);
+	
+	void handleDocuments(telebot_document_t* P_Telebot_Document);
+    bool downloadFromChat(const char* File_Id, const char* File_Path);
     void listen();
 };
 

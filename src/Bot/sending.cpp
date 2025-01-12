@@ -21,10 +21,8 @@ namespace trat
             return false;
         }
 
-        if (
-            telebot_send_message(handle, clientId, Message, "HTML", true, false,  0, "") 
-            != 
-            TELEBOT_ERROR_NONE)
+        if (telebot_send_message(handle, clientId, Message, "HTML", true, false,  0, "") 
+            != TELEBOT_ERROR_NONE)
         {
             return false;
         }
@@ -43,30 +41,27 @@ namespace trat
     int reply_to_message_id, 
     const char *reply_markup)
     */
-    bool Bot::sendPhoto(const char* FilePath)
+    bool Bot::sendPhoto(const char* File_Path)
     {
-        if (FilePath == nullptr)
+        if (File_Path == nullptr)
         {
             return false;
         }
-        if(
-            telebot_send_photo(handle, clientId, FilePath, true, "", "HTML", false,
-                                0, ""
-            ) != TELEBOT_ERROR_NONE
-        )
+        if( telebot_send_photo(handle, clientId, File_Path, true, "", "HTML", false, 0, "") 
+            != TELEBOT_ERROR_NONE)
         {
             return false;
         }
         return true;
     }
-    bool Bot::sendDocument(const char* DocumentPath)
+    bool Bot::sendDocument(const char* Document_Path)
     {
-        if (DocumentPath == nullptr)
+        if (Document_Path == nullptr)
         {
             return false;
         }
         if(
-            telebot_send_document(handle, clientId, DocumentPath, true, "", ""
+            telebot_send_document(handle, clientId, Document_Path, true, "", ""
             , "HTML", false, 0, "") != TELEBOT_ERROR_NONE
         )
         {

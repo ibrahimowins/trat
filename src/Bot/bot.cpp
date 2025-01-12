@@ -2,9 +2,9 @@
 namespace trat 
 {
 
-    Bot::Bot(const char* Token, const int64_t& ClientId)
+    Bot::Bot(const char* Token, const int64_t& Client_Id)
     :token(strdup(Token)),
-     clientId(ClientId),
+     clientId(Client_Id),
      shell(Shell(this))
     {
 
@@ -33,9 +33,9 @@ namespace trat
             token = nullptr;
         }
     }
-    bool Bot::downloadFromChat(const char* FileId, const char* FilePath)
+    bool Bot::downloadFromChat(const char* File_Id, const char* File_Path)
     {
-        if(!telebot_download_file(this -> handle, FileId, FilePath ))
+        if(!telebot_download_file(this -> handle, File_Id, File_Path ))
         {
             return false;
         }

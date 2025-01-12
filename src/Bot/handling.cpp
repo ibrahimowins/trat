@@ -31,6 +31,26 @@ namespace trat
                 }
                 this->sendMessage(message_buffer);
             }).detach();
-    }
-}
+		}
+	}
+    void Bot::handleDocuments(telebot_document_t* P_Telebot_Document)
+    {
+			 if (P_Telebot_Document != nullptr)
+             {
+                auto fileId = P_Telebot_Document -> file_id;
+                auto fileName = P_Telebot_Document -> file_name;
+                std::thread([this, fileId, fileName]() 
+                {
+                   if (telebot_download_file(this -> handle, fileId, fileName ))
+                   {
+					   this -> sendMessage("File successfully Downloaded");
+				   }
+				   else
+				   {
+					   this -> sendMessage("File failed to Download");
+				   }
+                   
+                }).detach();
+              }
+	}
 }
