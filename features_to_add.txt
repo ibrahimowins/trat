@@ -1,5 +1,5 @@
 Upload from client a binary, download and execute it immediately.
-ls, rm, basicalyl all shells capabilities.
+ls, rm, basically all shell capabilities.
 
 /ip, gets you ip adress
 /shell command executes shell command
