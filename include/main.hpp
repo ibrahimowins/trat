@@ -2,6 +2,7 @@
 #define MAIN_HPP
 
 #include <iostream>
+#include <cstdlib>
 #include <string>
 #include <stdio.h>
 #include <stdlib.h>
