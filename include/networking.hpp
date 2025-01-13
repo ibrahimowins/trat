@@ -3,9 +3,8 @@
 
 #include <stdio.h>    // For file operations like fopen, fwrite, fclose, fstat
 #include <stdlib.h>   // For general-purpose functions like malloc, free, exit
-#include <string.h>   // For string manipulation (e.g., snprintf)
-#include <string>
-#include <curl/curl.h> // For libcurl functions like curl_easy_init, curl_easy_setopt, curl_easy_perform
+#include <string.h>   
+#include <curl/curl.h> 
 #include <sys/stat.h>  // For fstat, which retrieves file information (needed for file size)
 
 #define NETWORKING_BUFFER_SIZE 256

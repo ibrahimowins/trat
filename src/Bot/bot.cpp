@@ -1,4 +1,6 @@
 #include "../../include/bot.hpp"
+#include <iostream>
+
 namespace trat 
 {
 

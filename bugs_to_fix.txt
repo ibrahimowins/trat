@@ -1,5 +1,6 @@
 Fix the handling documents method, it recognizes the file, and even though it does not downloads it it sends a positive reply.
 
+Apparently if a download fails, and a new ones is uploaded, what happens is that the downloader downloads the old one, and ignores the new.
 When using the /download command, if the link is not valid, empty, or dummy the downnload does not fail and the thread does not detach, this must be fixed.
 
 
