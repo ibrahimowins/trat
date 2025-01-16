@@ -2,6 +2,7 @@
 #define SHELL_HPP
 
 #include <cstring>
+#include <string>
 
 #define SHELL_RESPONSE_BUFFER_SIZE
 
@@ -10,7 +11,7 @@ namespace trat
   typedef struct 
   {
     bool isSuccessful;             // Indicates success of the operation
-    char response[512];          // Response from the shell or bot
+    const char *response;          // Response from the shell or bot
   }ShellResponse;
 
   class Bot;
@@ -22,10 +23,11 @@ namespace trat
     public:
       Shell(trat::Bot* MasterBot);  
       
-      char* getCurrentPath();
+      const char* getCurrentPath();
         
       bool executeShellCommandWithoutResponse(const char* Command);
         
+      ShellResponse executeShellCommand(const char* Command); 
     };
 
 } // namespace trat

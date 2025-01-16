@@ -1,5 +1,7 @@
 Fix the handling documents method, it recognizes the file, and even though it does not downloads it it sends a positive reply.
 
+Three of the parser functions share logic, Impliment one funciton that seperates the prefix of the text from the suffix, the seperating operator is the space bar, keep the function but make them call it to make the code modular.
+
 Apparently if a download fails, and a new ones is uploaded, what happens is that the downloader downloads the old one, and ignores the new.
 When using the /download command, if the link is not valid, empty, or dummy the downnload does not fail and the thread does not detach, this must be fixed.
 

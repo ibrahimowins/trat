@@ -2,9 +2,9 @@
 
 # Compiler and flags
 CC = g++                              # C++ compiler
-CFLAGS = -Wall -Werror  -std=c++17 -O2 -fsanitize=leak            # Compiler flags (warnings as errors)
+CFLAGS = -g -Wall -Werror  -static -std=c++17 -O2 -fsanitize=leak            # Compiler flags (warnings as errors)
 INCLUDE = -I/usr/local/include        # Include directories
-LFLAGS = -L/usr/local/lib -ltelebot -ljson-c -lcurl  # Linker flags
+LFLAGS = -L/usr/local/lib -ltelebot -ljson-c -lcurl -lboost_system # Linker flags
 
 # Source files and object files
 SRC = $(wildcard src/*.cpp)  $(wildcard src/Bot/*.cpp) $(wildcard src/Shell/*.cpp)  # $(wildcard src/Emailer*.cpp)      # Find all .cpp files in src/
