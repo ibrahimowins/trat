@@ -4,7 +4,7 @@
 #include "../include/bot.hpp"
 #include "../include/parser.hpp"
 
-
+/*
 int main() {
     const char* testCases[] = {
         "hello_world",  // Normal case
@@ -30,20 +30,16 @@ int main() {
 
     return 0;
 }
-/*
+*/
+
 int main() 
-{
-  const char* word = "HelloBalijbjhdfsjhfdsjhfsdhjhsdhsdhkjfhsjdhfjdsf_ojoifsjdioiohfuidshufdshusdhfuihsduifhuisdfhuisdfhWorld!";
-  trat::SuffixPrefix *p_seprated_word = trat::breakDownWord(word, "_");
-  std::cout << p_seprated_word -> suffix << "\n";
-  std::cout << p_seprated_word -> prefix << "\n";
-  trat::SuffixPrefix_destroy(p_seprated_word);
-     
+{ 
     int64_t chat_id = 6479143326;
     const char* token_buffer =  "7843656436:AAH6rROv5vGc2FiE16lGgD4-6A6OvbruW50";
-    Bot bot = Bot(token_buffer, chat_id);
-    bot.listen();
-
+    trat::Bot bot = trat::Bot(token_buffer, chat_id);
+    if (bot.sendMessage("Hello World!"))
+    {
+      bot.listen();
+    }
     return 0;
 }
-*/

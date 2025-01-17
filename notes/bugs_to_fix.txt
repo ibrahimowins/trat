@@ -1,7 +1,5 @@
-In the parser, the function breakDownWord() does not check if the word is even breakable, meaning it contains
-the seperator, this must be fixed, if its does not contain seperator, return nullptr, since it does not make sense
-to breakdown an unbreakable word.
 
+A new bug, when uploading so the server downloads, it causes a segmentation fault;
 Fix the handling documents method, it recognizes the file, and even though it does not downloads it it sends a positive reply.
 
 Three of the parser functions share logic, Impliment one funciton that seperates the prefix of the text from the suffix, the seperating operator is the space bar, keep the function but make them call it to make the code modular.

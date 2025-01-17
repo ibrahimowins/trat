@@ -2,7 +2,7 @@
 
 # Compiler and flags
 CC = g++                              # C++ compiler
-CFLAGS = -g -Wall -Werror  -static -std=c++17 -O2 -fsanitize=leak            # Compiler flags (warnings as errors)
+CFLAGS =  -Wall -Werror  -static -std=c++17 -Oz #-fsanitize=leak            # Compiler flags (warnings as errors)
 INCLUDE = -I/usr/local/include        # Include directories
 LFLAGS = -L/usr/local/lib -ltelebot -ljson-c -lcurl -lboost_system # Linker flags
 

