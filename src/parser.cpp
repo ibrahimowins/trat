@@ -6,10 +6,8 @@
 
 namespace trat
 {
-
   namespace parser
   {
-
     PrefixSuffix* breakDownWord(const char* Word, const char* Seperator)
     {
       if  ((Word == nullptr) || (Seperator == nullptr ))
@@ -33,7 +31,6 @@ namespace trat
       }
       size_t prefixLength = separatorPos - Word;
       size_t suffixLength = strlen(Word) - prefixLength - strlen(Seperator);
-
       if (prefixLength == 0)
       {
         p_result->prefix = strdup("");
@@ -70,47 +67,40 @@ namespace trat
 
     void PrefixSuffix_destroy(PrefixSuffix *P_PrefixSuffix)
     {
-      free(P_PrefixSuffix->suffix);
-      P_PrefixSuffix->suffix = nullptr;
-
-      free(P_PrefixSuffix->prefix);
-      P_PrefixSuffix->prefix = nullptr;
-
-      free(P_PrefixSuffix);
-      P_PrefixSuffix = nullptr;
-    }
-
-    const char* extractDownloadLink(const char* Text)
-    {
-      const char* command_prefix = "/download ";
-      size_t prefix_length = std::strlen(command_prefix);
-
-      if (std::strncmp(Text, command_prefix, prefix_length) == 0)
+      if(P_PrefixSuffix != nullptr)
       {
-        const char* link = Text + prefix_length;
-        if (std::strlen(link) > 0)
+        if (P_PrefixSuffix -> suffix != nullptr)
         {
-          return link;
+          free(P_PrefixSuffix->suffix);
+          P_PrefixSuffix->suffix = nullptr;
         }
+        if (P_PrefixSuffix -> prefix)
+        {
+          free(P_PrefixSuffix->prefix);
+          P_PrefixSuffix->prefix = nullptr;
+        }
+        free(P_PrefixSuffix);
+        P_PrefixSuffix = nullptr;
       }
-      return nullptr;
     }
 
-    const char* extractShellCommand(const char* Text)
+    char* checkCommandAndExtractParemeter(const char* Command, const char* Text)
     {
-      const char* command_prefix = "/shell";
-      size_t prefix_length = std::strlen(command_prefix);
-      if (std::strncmp(Text, command_prefix, prefix_length) == 0)
+      if (Text == nullptr)
       {
-        const char* command = Text + prefix_length;
-        if(std::strlen(command) > 0)
-        {
-          return command;
-        }
+        return nullptr;
       }
-      return nullptr;
+      PrefixSuffix *p_command_with_paremeter = breakDownWord(Text, " "); 
+      if((p_command_with_paremeter == nullptr) || 
+        (strcmp(p_command_with_paremeter -> prefix , Command) != 0)
+        )
+      {
+        PrefixSuffix_destroy(p_command_with_paremeter);
+        return nullptr;
+      }
+      return p_command_with_paremeter -> suffix;
     }
-
+    
     const char* extractFileNameFromLink(const char* Link)
     {
       if (Link == nullptr || std::strlen(Link) == 0)
@@ -134,13 +124,11 @@ namespace trat
       {
         return nullptr;
       }
-
       const char* last_dot = std::strrchr(file_name, '.');
       if (last_dot != nullptr && *(last_dot + 1) != '\0')
       {
         return last_dot + 1;
       }
-
       return nullptr;
     }
 
@@ -150,13 +138,11 @@ namespace trat
       {
         return nullptr;
       }
-
       const char* file_name = extractFileNameFromLink(Link);
       if (file_name == nullptr || std::strlen(file_name) == 0)
       {
         return nullptr;
       }
-
       try
       {
         std::string current_path = std::filesystem::current_path().string();
@@ -170,7 +156,5 @@ namespace trat
         return nullptr;
       }
     }
-
   }
-
 }

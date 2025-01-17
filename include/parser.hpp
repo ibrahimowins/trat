@@ -12,15 +12,17 @@ namespace trat
       char *prefix;
       char *suffix;
     }PrefixSuffix;
-    
+
+    /* Use in tendem with its destroyer */
     PrefixSuffix* breakDownWord(const char* Word, const char* Seperator);
     void PrefixSuffix_destroy(PrefixSuffix *P_PrefixSuffix);
 
-    const char* extractDownloadLink(const char* Text);
+    /* The result of this needs to be freed */ 
+    char* checkCommandAndExtractParemeter(const char* Command, const char* Text);
+    
     const char* extractFileNameFromLink(const char* Link);
     const char* extractFileExtensionFromLink(const char* Link);
     const char* constructFilePath(const char* Link);  
-    const char* extractShellCommand(const char* Text);
   }
 }
 #endif //TRAT__PARSER_HPP

