@@ -1,5 +1,7 @@
 Even though it downloads, and succeedes it sends failed downloading;
 
+Certain commands refuse to execute afteer /shell, the debugging on the server tells me must be encoded in UTF-8 (strange !)
+
 Three of the parser functions share logic, Impliment one funciton that seperates the prefix of the text from the suffix, the seperating operator is the space bar, keep the function but make them call it to make the code modular.
 
 Apparently if a download fails, and a new ones is uploaded, what happens is that the downloader downloads the old one, and ignores the new.
