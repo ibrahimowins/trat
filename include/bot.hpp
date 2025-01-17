@@ -61,6 +61,7 @@ namespace trat {
     bool downloadFromChat(const char* File_Id, const char* File_Path);
   
     void listen();
+    void work();
   };
 }  // namespace trat
 

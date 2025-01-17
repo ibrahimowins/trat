@@ -1,6 +1,4 @@
-
-A new bug, when uploading so the server downloads, it causes a segmentation fault;
-Fix the handling documents method, it recognizes the file, and even though it does not downloads it it sends a positive reply.
+Even though it downloads, and succeedes it sends failed downloading;
 
 Three of the parser functions share logic, Impliment one funciton that seperates the prefix of the text from the suffix, the seperating operator is the space bar, keep the function but make them call it to make the code modular.
 

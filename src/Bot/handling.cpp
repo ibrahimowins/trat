@@ -8,20 +8,42 @@ namespace trat
 {
   bool Bot::checkIfCommand(const char* Message) 
   {
-    // Extract the prefix (substring before the first space)
-    const char* space_pos = std::strchr(Message, ' ');
-    size_t prefix_len = (space_pos != nullptr) ? (space_pos - Message) : std::strlen(Message);
-
-    // Check if the extracted prefix matches any command in the array
-    for (unsigned int i = 0; i < this -> numberCommands; ++i) 
+    if(Message == nullptr)
     {
-      auto command = (this -> commands)[i];
-      if (std::strncmp(Message, command, prefix_len) == 0 && std::strlen(command) == prefix_len) 
-      {
-        return true;  // Match found
-      }
+      return false;
     }
-    return false;  // No match
+    
+    parser::PrefixSuffix *p_prefix_and_suffix = parser::breakDownWord(Message, " ");
+    if (p_prefix_and_suffix == nullptr)
+    {
+      return false;
+    }
+    if (strcmp(p_prefix_and_suffix -> prefix, "") == 0)
+    {
+      if (p_prefix_and_suffix != nullptr)
+      {
+        parser::PrefixSuffix_destroy(p_prefix_and_suffix);
+      }
+      return false;
+    }else
+    {
+      for(auto i = 0 ; i < NUMBER_RECOGNIZED_COMMANDS; ++i)
+      {
+        if ( strcmp(p_prefix_and_suffix -> prefix, (this -> commands)[i]) == 0 )
+        {
+          if (p_prefix_and_suffix != nullptr)
+          {
+            parser::PrefixSuffix_destroy(p_prefix_and_suffix);
+          }
+          return true;
+        }
+      }
+      if (p_prefix_and_suffix != nullptr)
+      {
+        parser::PrefixSuffix_destroy(p_prefix_and_suffix);
+      }
+      return false;
+    }
   }
   void Bot::handleTextBasedCommand(const char* Telegram_Message_Text, const char* Command,  char* Shell_Function_Callback_Result)
   {

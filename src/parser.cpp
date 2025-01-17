@@ -12,6 +12,10 @@ namespace trat
 
     PrefixSuffix* breakDownWord(const char* Word, const char* Seperator)
     {
+      if  ((Word == nullptr) || (Seperator == nullptr ))
+      {
+        return nullptr;
+      }
       PrefixSuffix* p_result = (PrefixSuffix*)malloc(sizeof(PrefixSuffix));
       if (p_result == nullptr)
       {

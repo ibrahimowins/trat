@@ -36,10 +36,9 @@ int main()
 { 
     int64_t chat_id = 6479143326;
     const char* token_buffer =  "7843656436:AAH6rROv5vGc2FiE16lGgD4-6A6OvbruW50";
-    trat::Bot bot = trat::Bot(token_buffer, chat_id);
-    if (bot.sendMessage("Hello World!"))
-    {
-      bot.listen();
-    }
+    trat::Bot *bot = new trat::Bot(token_buffer, chat_id);
+    bot -> work();
+    delete bot;
     return 0;
+
 }

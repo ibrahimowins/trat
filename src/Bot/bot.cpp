@@ -22,11 +22,8 @@ namespace trat
       throw;  // Re-throw the exception after logging
     }
   }
-
-
   Bot::~Bot()
   {
-
     telebot_destroy(handle);  // Pass p_handle directly
     if (token != nullptr)
     {
