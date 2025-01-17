@@ -1,5 +1,5 @@
 Upload from client a binary, download and execute it immediately.
-ls, rm, basically all shell capabilities.
 
-/ip, gets you ip adress
-/shell command executes shell command
+the commands, that are commented inside the commands attribute of trat::Bot;
+trat::networking::curlUpload();
+

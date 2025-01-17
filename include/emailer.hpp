@@ -5,24 +5,24 @@
 #include "bot.hpp"
 
 
+#define EMAIL_ADRESS_BUFFER_SIZE 128
+#define EMAIL_PASSWORD_BUFFER_SIZE 64
 
 namespace trat
 {
     
-    class Emailer
-    {
-        private:
-            std::string workingPath;
-            std::string emailAdress;
-            std::string password;
-            Bot* botMaster;
-        public:
-            Emailer();
-            ~Emailer();
-            
-            bool sendEmail();
+  class Emailer
+  {
+    private:
+    char emailAdress[EMAIL_ADRESS_BUFFER_SIZE];
+    char password[EMAIL_PASSWORD_BUFFER_SIZE];
+    const Bot* botMaster;
+    public:
+    Emailer();
+    ~Emailer();
 
+    bool sendEmail();
     };
-}
+} //namspace trat
 
-#endif EMAILER_HPP
+#endif //EMAILER_HPP

@@ -14,9 +14,7 @@ namespace trat
     try
     {
       if (telebot_create(&handle, token) != TELEBOT_ERROR_NONE)  // Pass address of p_handle
-      {
         throw std::runtime_error("Failed to create Telebot handler.");
-      }
     }
     catch (const std::exception& e)
     {

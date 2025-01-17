@@ -3,7 +3,6 @@
 #define SHELL_HPP
 
 #include <cstring>
-#include <string>
 
 #define SHELL_RESPONSE_BUFFER_SIZE
 
@@ -20,16 +19,17 @@ namespace trat
   class Shell 
   {
     private:
-      Bot* masterBot;
+    Bot* masterBot;
+    
     public:
-      Shell(trat::Bot* MasterBot);  
+    Shell(trat::Bot* MasterBot);  
       
-      const char* getCurrentPath();
+    const char* getCurrentPath();
         
-      bool executeShellCommandWithoutResponse(const char* Command);
+    bool executeShellCommandWithoutResponse(const char* Command);
         
-      ShellResponse executeShellCommand(const char* Command); 
-    };
+    ShellResponse executeShellCommand(const char* Command); 
+  };
 
 } // namespace trat
 
