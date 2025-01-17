@@ -1,105 +1,103 @@
+/* trat/src/networking.cpp */
+
 #include "../include/networking.hpp"
 
 namespace trat
 {
-    void setFileNameFromFullPath(const char *fullPath, char **filename, char separator) 
-    {
-        // Find the last occurrence of the path separator
-        const char *separatorPos = strrchr(fullPath, separator);
 
-        if (separatorPos) 
+  namespace networking
+  {
+
+    void setFileNameFromFullPath(const char *Full_Path, char **File_Name, char Separator)
+    {
+      const char *separatorPos = strrchr(Full_Path, Separator);
+
+      if (separatorPos)
+      {
+        *File_Name = strdup(separatorPos + 1);
+        if (*File_Name == nullptr)
         {
-            // Allocate memory for the filename (everything after the separator)
-            *filename = strdup(separatorPos + 1);  // Ensure strdup is successful
-            if (*filename == nullptr)
-            {
-                // Memory allocation failed
-                *filename = nullptr;
-            }
-        } 
-        else 
-        {
-            // If no separator found, treat the full path as the filename
-            *filename = strdup(fullPath);
-            if (*filename == nullptr)
-            {
-                // Memory allocation failed
-                *filename = nullptr;
-            }
+          *File_Name = nullptr;
         }
+      }
+      else
+      {
+        *File_Name = strdup(Full_Path);
+        if (*File_Name == nullptr)
+        {
+          *File_Name = nullptr;
+        }
+      }
     }
 
-    // Callback function for writing data
-    void writeCallback(void *Data, size_t SizeDataElement, size_t NumberDataElements, FILE *OutputStream)
+    void writeCallback(void *Data, size_t Size_Data_Element, size_t Number_Data_Elements, FILE *Output_Stream)
     {
-        fwrite(Data, SizeDataElement, NumberDataElements, OutputStream);
+      fwrite(Data, Size_Data_Element, Number_Data_Elements, Output_Stream);
     }
 
-    // Function to handle downloading a file using libcurl
-    NetworkingResponse curlDownload(const char* Url, const char* OutputFilePath)
-{
-    CURL* curl;
-    CURLcode res;
-    FILE* fp;
-    NetworkingResponse response = {false, nullptr, 0.0};  // Initialize with default values
-    clock_t start, end;
-
-    curl = curl_easy_init();
-    if (!curl)
+    NetworkingResponse curlDownload(const char* Url, const char* Output_File_Path)
     {
+      CURL* curl;
+      CURLcode res;
+      FILE* fp;
+      NetworkingResponse response = {false, nullptr, 0.0};
+      clock_t start, end;
+
+      curl = curl_easy_init();
+      if (!curl)
+      {
         response.errorLog = strdup("Failed to initialize curl");
         return response;
-    }
+      }
 
-    char* filename;
-    setFileNameFromFullPath(OutputFilePath, &filename, FILE_PATH_SEPARATOR);
+      char* filename;
+      setFileNameFromFullPath(Output_File_Path, &filename, FILE_PATH_SEPARATOR);
 
-    if (!filename)
-    {
+      if (!filename)
+      {
         response.errorLog = strdup("Failed to allocate memory for filename");
         return response;
-    }
+      }
 
-    fp = fopen(filename, "wb");
-    if (!fp)
-    {
+      fp = fopen(filename, "wb");
+      if (!fp)
+      {
         curl_easy_cleanup(curl);
         response.errorLog = strdup("Failed to open file");
         free(filename);
         return response;
-    }
+      }
 
-    curl_easy_setopt(curl, CURLOPT_URL, Url);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+      curl_easy_setopt(curl, CURLOPT_URL, Url);
+      curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+      curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
 
-    start = clock();
+      start = clock();
 
-    res = curl_easy_perform(curl);
+      res = curl_easy_perform(curl);
 
-    end = clock();
+      end = clock();
 
-    response.timeInSeconds = ((double)(end - start)) / CLOCKS_PER_SEC;
+      response.timeInSeconds = ((double)(end - start)) / CLOCKS_PER_SEC;
 
-    if (res != CURLE_OK)
-    {
+      if (res != CURLE_OK)
+      {
         response.errorLog = strdup(curl_easy_strerror(res));
         response.isSuccessful = false;
-    }
-    else
-    {
-        response.errorLog = strdup("");  // Empty string indicates no error
+      }
+      else
+      {
+        response.errorLog = strdup("");
         response.isSuccessful = true;
+      }
+
+      fclose(fp);
+      curl_easy_cleanup(curl);
+      free(filename);
+
+      return response;
     }
 
-    fclose(fp);
-    curl_easy_cleanup(curl);
-    free(filename);
-
-    return response;
-}
-
-
-    // Upload a file to Telegram Bot
+  }
 
 }

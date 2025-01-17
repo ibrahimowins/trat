@@ -1,111 +1,172 @@
+/* trat/src/parser.cpp */
 #include "../include/parser.hpp"
+#include <cstring>
 #include <string>
 #include <filesystem>
+
 namespace trat
 {
-  const char* extractDownloadLink(const char* Text)
-  {
-    const char* command_prefix = "/download ";
-    size_t prefix_length = std::strlen(command_prefix);
 
-    if (std::strncmp(Text, command_prefix, prefix_length) == 0)
+  namespace parser
+  {
+
+    PrefixSuffix* breakDownWord(const char* Word, const char* Seperator)
     {
-      // Extract the link after the prefix
-      const char* link = Text + prefix_length;
-      if (std::strlen(link) > 0)
+      PrefixSuffix* p_result = (PrefixSuffix*)malloc(sizeof(PrefixSuffix));
+      if (p_result == nullptr)
       {
-        return link; // Return the link
+        return nullptr;
       }
-    }
-    return nullptr; // Return empty if no valid link
-  }
-  const char* extractShellCommand(const char* Text)
-  {
-    const char* command_prefix = "/shell";
-    size_t prefix_length = std::strlen(command_prefix);
-    if (std::strncmp(Text, command_prefix, prefix_length) == 0)
-    {
-      const char* command = Text + prefix_length;
-      if(std::strlen(command) > 0)
+      p_result->prefix = nullptr;
+      p_result->suffix = nullptr;
+
+      const char* separatorPos = strstr(Word, Seperator);
+      if (!separatorPos)
       {
-        return command;
+        free(p_result);
+        p_result = nullptr;
+        return nullptr;
       }
+      size_t prefixLength = separatorPos - Word;
+      size_t suffixLength = strlen(Word) - prefixLength - strlen(Seperator);
 
-    }
-    return nullptr;
-  }
-  // Extract the file name from a URL or file path
-  const char* extractFileNameFromLink(const char* Link)
-  {
-    if (Link == nullptr || std::strlen(Link) == 0)
-    {
-      return nullptr; // Return null if the link is invalid
-    }
-
-    // Find the last '/' character to get the start of the file name
-    const char* last_slash = std::strrchr(Link, '/');
-    if (last_slash != nullptr)
-    {
-      // Move the pointer past the last '/'
-      return last_slash + 1;
-    }
-
-    // If no '/' is found, assume the entire link is the file name
-    return Link;
-  }
-
-  // Extract the file extension from a file name or URL
-  const char* extractFileExtensionFromLink(const char* Link)
-  {
-    // Get the file name first
-    const char* file_name = extractFileNameFromLink(Link);
-    if (file_name == nullptr || std::strlen(file_name) == 0)
-    {
-      return nullptr; // Return null if the file name is invalid
-    }
-
-    // Find the last '.' character in the file name
-    const char* last_dot = std::strrchr(file_name, '.');
-    if (last_dot != nullptr && *(last_dot + 1) != '\0')
-    {
-      // Return the extension starting after the last '.'
-      return last_dot + 1;
+      if (prefixLength == 0)
+      {
+        p_result->prefix = strdup("");
+      }
+      else
+      {
+        p_result->prefix = (char*)malloc(prefixLength + 1);
+        if (p_result->prefix == nullptr)
+        {
+          free(p_result);
+          return nullptr;
+        }
+        strncpy(p_result->prefix, Word, prefixLength);
+        p_result->prefix[prefixLength] = '\0';
+      }
+      if (suffixLength == 0)
+      {
+        p_result->suffix = strdup("");
+      }
+      else
+      {
+        p_result->suffix = (char*)malloc(suffixLength + 1);
+        if (p_result->suffix == nullptr)
+        {
+          free(p_result->prefix);
+          free(p_result);
+          return nullptr;
+        }
+        strncpy(p_result->suffix, separatorPos + strlen(Seperator), suffixLength);
+        p_result->suffix[suffixLength] = '\0';
+      }
+      return p_result;
     }
 
-    // If no '.' is found, return null (no extension)
-    return nullptr;
-  }
-  const char* constructFilePath(const char* Link)
-  {
-    // Validate the input link
-    if (Link == nullptr || std::strlen(Link) == 0)
+    void PrefixSuffix_destroy(PrefixSuffix *P_PrefixSuffix)
     {
-      return nullptr; // Return null if the link is invalid
+      free(P_PrefixSuffix->suffix);
+      P_PrefixSuffix->suffix = nullptr;
+
+      free(P_PrefixSuffix->prefix);
+      P_PrefixSuffix->prefix = nullptr;
+
+      free(P_PrefixSuffix);
+      P_PrefixSuffix = nullptr;
     }
 
-    // Extract the file name from the link
-    const char* file_name = extractFileNameFromLink(Link);
-    if (file_name == nullptr || std::strlen(file_name) == 0)
+    const char* extractDownloadLink(const char* Text)
     {
-      return nullptr; // Return null if the file name is invalid
-    }
+      const char* command_prefix = "/download ";
+      size_t prefix_length = std::strlen(command_prefix);
 
-    try
-    {
-      // Get the current working directory
-      std::string current_path = std::filesystem::current_path().string();
-
-      // Construct the full path by appending the file name
-      std::string full_path = current_path + "/" + file_name;
-
-      // Allocate memory for the result and copy the full path
-      char* result = new char[full_path.length() + 1];
-      std::strcpy(result, full_path.c_str());
-      return result;
-    }
-    catch (const std::exception& e)
-    {
+      if (std::strncmp(Text, command_prefix, prefix_length) == 0)
+      {
+        const char* link = Text + prefix_length;
+        if (std::strlen(link) > 0)
+        {
+          return link;
+        }
+      }
       return nullptr;
     }
+
+    const char* extractShellCommand(const char* Text)
+    {
+      const char* command_prefix = "/shell";
+      size_t prefix_length = std::strlen(command_prefix);
+      if (std::strncmp(Text, command_prefix, prefix_length) == 0)
+      {
+        const char* command = Text + prefix_length;
+        if(std::strlen(command) > 0)
+        {
+          return command;
+        }
+      }
+      return nullptr;
+    }
+
+    const char* extractFileNameFromLink(const char* Link)
+    {
+      if (Link == nullptr || std::strlen(Link) == 0)
+      {
+        return nullptr;
+      }
+
+      const char* last_slash = std::strrchr(Link, '/');
+      if (last_slash != nullptr)
+      {
+        return last_slash + 1;
+      }
+
+      return Link;
+    }
+
+    const char* extractFileExtensionFromLink(const char* Link)
+    {
+      const char* file_name = extractFileNameFromLink(Link);
+      if (file_name == nullptr || std::strlen(file_name) == 0)
+      {
+        return nullptr;
+      }
+
+      const char* last_dot = std::strrchr(file_name, '.');
+      if (last_dot != nullptr && *(last_dot + 1) != '\0')
+      {
+        return last_dot + 1;
+      }
+
+      return nullptr;
+    }
+
+    const char* constructFilePath(const char* Link)
+    {
+      if (Link == nullptr || std::strlen(Link) == 0)
+      {
+        return nullptr;
+      }
+
+      const char* file_name = extractFileNameFromLink(Link);
+      if (file_name == nullptr || std::strlen(file_name) == 0)
+      {
+        return nullptr;
+      }
+
+      try
+      {
+        std::string current_path = std::filesystem::current_path().string();
+        std::string full_path = current_path + "/" + file_name;
+        char* result = new char[full_path.length() + 1];
+        std::strcpy(result, full_path.c_str());
+        return result;
+      }
+      catch (const std::exception& e)
+      {
+        return nullptr;
+      }
+    }
+
   }
+
 }

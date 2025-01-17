@@ -1,10 +1,12 @@
+/* trat/src/Shell/shell.cpp */
 #include "../../include/shell.hpp"
 #include <boost/process.hpp>
 #include <sstream>
 #include <filesystem>
 #include <cstdlib>
 
-namespace trat {
+namespace trat 
+{
 
     // Constructor
     Shell::Shell(trat::Bot* MasterBot) : masterBot(MasterBot) {}

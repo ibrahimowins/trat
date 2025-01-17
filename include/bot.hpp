@@ -1,3 +1,4 @@
+/* trat/include/bot.hpp */
 #ifndef BOT_HPP
 #define BOT_HPP
 

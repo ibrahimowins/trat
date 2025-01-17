@@ -1,3 +1,4 @@
+/* trat/include/networking.hpp */
 #ifndef NETWORKING_HPP
 #define NETWORKING_HPP
 
@@ -12,6 +13,9 @@
 
 namespace trat
 {
+  namespace networking
+  {
+  
     struct NetworkingResponse
     {
         bool isSuccessful;
@@ -19,10 +23,11 @@ namespace trat
         double timeInSeconds;
     };
 
-    void setFileNameFromFullPath(const char *fullPath, char **filename, char separator);
-    void writeCallback(void *Data, size_t SizeDataElement, size_t NumberDataElements, FILE *outputStream);
+    void setFileNameFromFullPath(const char *Full_Path, char **File_Name, char Separator);
+    void writeCallback(void *Data, size_t Size_Data_Element, size_t Number_Data_Elements, FILE *Output_Stream);
 
-    NetworkingResponse curlDownload(const char *Url, const char *OutputFilePath);
+    NetworkingResponse curlDownload(const char *Url, const char *Output_File_Path);
+  }
 }
 
 #endif //NETWORKING_HPP
