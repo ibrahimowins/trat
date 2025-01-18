@@ -16,7 +16,7 @@ namespace trat
     }
   } 
 
-  Shell::Shell(trat::Bot* MasterBot) : masterBot(MasterBot) {}
+  Shell::Shell(trat::Bot* P_Master_Bot) : masterBot(P_Master_Bot) {}
   /* To be freed */
   char* Shell::getCurrentPath() 
   {

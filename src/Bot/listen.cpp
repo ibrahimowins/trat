@@ -68,15 +68,12 @@ namespace trat
             // You can handle the future if you need to, or simply discard it if you don't care about the result
             future.get(); // This ensures we consume the result and prevent the warning.
           }
-
                     // Update the offset after processing
           offset = update.update_id + 1;
-
           // To prevent busy-waiting
           std::this_thread::sleep_for(std::chrono::seconds(1));
         }
       }
-
       // Clean up the updates array to avoid memory leaks
       telebot_put_updates(updates, count);
     }

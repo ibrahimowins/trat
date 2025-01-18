@@ -22,45 +22,45 @@ namespace trat
       p_result->prefix = nullptr;
       p_result->suffix = nullptr;
 
-      const char* separatorPos = strstr(Word, Seperator);
-      if (!separatorPos)
+      const char* separator_pos = strstr(Word, Seperator);
+      if (!separator_pos)
       {
         free(p_result);
         p_result = nullptr;
         return nullptr;
       }
-      size_t prefixLength = separatorPos - Word;
-      size_t suffixLength = strlen(Word) - prefixLength - strlen(Seperator);
-      if (prefixLength == 0)
+      size_t prefix_length = separator_pos - Word;
+      size_t suffix_length = strlen(Word) - prefix_length - strlen(Seperator);
+      if (prefix_length == 0)
       {
         p_result->prefix = strdup("");
       }
       else
       {
-        p_result->prefix = (char*)malloc(prefixLength + 1);
+        p_result->prefix = (char*)malloc(prefix_length + 1);
         if (p_result->prefix == nullptr)
         {
           free(p_result);
           return nullptr;
         }
-        strncpy(p_result->prefix, Word, prefixLength);
-        p_result->prefix[prefixLength] = '\0';
+        strncpy(p_result->prefix, Word, prefix_length);
+        p_result->prefix[prefix_length] = '\0';
       }
-      if (suffixLength == 0)
+      if (suffix_length == 0)
       {
         p_result->suffix = strdup("");
       }
       else
       {
-        p_result->suffix = (char*)malloc(suffixLength + 1);
+        p_result->suffix = (char*)malloc(suffix_length + 1);
         if (p_result->suffix == nullptr)
         {
           free(p_result->prefix);
           free(p_result);
           return nullptr;
         }
-        strncpy(p_result->suffix, separatorPos + strlen(Seperator), suffixLength);
-        p_result->suffix[suffixLength] = '\0';
+        strncpy(p_result->suffix, separator_pos + strlen(Seperator), suffix_length);
+        p_result->suffix[suffix_length] = '\0';
       }
       return p_result;
     }
