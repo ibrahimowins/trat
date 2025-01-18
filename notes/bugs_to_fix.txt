@@ -1,16 +1,4 @@
-Even though it downloads, and succeedes it sends failed downloading;
-
-Certain commands refuse to execute afteer /shell, the debugging on the server tells me must be encoded in UTF-8 (strange !)
-
-Three of the parser functions share logic, Impliment one funciton that seperates the prefix of the text from the suffix, the seperating operator is the space bar, keep the function but make them call it to make the code modular.
-
-Apparently if a download fails, and a new ones is uploaded, what happens is that the downloader downloads the old one, and ignores the new.
 When using the /download command, if the link is not valid, empty, or dummy the downnload does not fail and the thread does not detach, this must be fixed.
-
-
-
-create methods to make the code more manageable, handleDocuments() download an uploaded file from the client side, define it in seperate handling.cpp.
-
 
 
 Impliment a functionality where the command /execute is with a bianry, it downloads it in a seperate thread, and until that threads finishes, it joins it and then executes it.
