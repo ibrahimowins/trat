@@ -1,3 +1,14 @@
+Add database management capabilities,
+where there are the following tables:
+
+Updates.
+Messages.
+Responses.
+
+Each indexed by date, hours minute and second.
+Each sessions has its own database, that is derived from the main one, when the program restarts it reads the current directory trying to connect to a one, if not it creates one, the bot should have the ability to clean its database, direct manipulation of it should be done through command line or openining a SQLite3 server, the bot simply logs, generate 1000 tuple ones, and deletes and clean all.
+
+
 Upload from client a binary, download and execute it immediately.
 
 the commands, that are commented inside the commands attribute of trat::Bot;
