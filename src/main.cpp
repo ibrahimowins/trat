@@ -1,36 +1,14 @@
 /* trat/main.cpp */
 #include <iostream>
-#include "../include/main.hpp"
+#include <cstdlib>
+#include <stdlib.h>
+#include <unistd.h>
+#include <telebot.h>
 #include "../include/bot.hpp"
 #include "../include/parser.hpp"
 
-/*
-int main() {
-    const char* testCases[] = {
-        "hello_world",  // Normal case
-        "_world",       // Separator at the beginning
-        "hello_",       // Separator at the end
-        "_",            // Separator spans the whole string
-        "hello world",  // No separator (should return NULL)
-        ""              // Empty string (should return NULL)
-    };
-    const char* separator = "_";
+#define CURRENT_PATH std::filesystem::current_path().string().c_str()
 
-    for (int i = 0; i < 6; ++i) {
-        printf("Test case: \"%s\"\n", testCases[i]);
-        trat::parser::PrefixSuffix* result = trat::parser::breakDownWord(testCases[i], separator);
-        if (result) {
-            printf("  Prefix: \"%s\"\n", result->prefix);
-            printf("  Suffix: \"%s\"\n", result->suffix);
-            trat::parser::PrefixSuffix_destroy(result);
-        } else {
-            printf("  The word cannot be broken down with the given separator.\n");
-        }
-    }
-
-    return 0;
-}
-*/
 
 int main() 
 { 
