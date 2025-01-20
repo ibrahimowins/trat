@@ -1,0 +1,3 @@
+/home/odahim/Sources/GitHub/trat/build/CMakeFiles/trat_bot.dir
+/home/odahim/Sources/GitHub/trat/build/CMakeFiles/edit_cache.dir
+/home/odahim/Sources/GitHub/trat/build/CMakeFiles/rebuild_cache.dir
