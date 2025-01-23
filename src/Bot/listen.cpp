@@ -40,7 +40,7 @@ namespace trat
           {
             auto handling_documents_future = std::async(std::launch::async, [this, message_document]()
             {
-              this->handleDocuments(message_document);
+              this->handleUploads(message_document);
             });
             handling_documents_future.get();
           

@@ -1,8 +1,5 @@
 /* trat/src/parser.cpp */
 #include "../include/parser.hpp"
-#include <cstring>
-#include <string>
-#include <filesystem>
 
 namespace trat
 {
@@ -15,10 +12,9 @@ namespace trat
         return nullptr;
       }
       PrefixSuffix* p_result = (PrefixSuffix*)malloc(sizeof(PrefixSuffix));
-      if (p_result == nullptr)
-      {
+      if (p_result == nullptr)  
         return nullptr;
-      }
+      
       p_result->prefix = nullptr;
       p_result->suffix = nullptr;
 
@@ -29,13 +25,13 @@ namespace trat
         p_result = nullptr;
         return nullptr;
       }
+      
       size_t prefix_length = separator_pos - Word;
       size_t suffix_length = strlen(Word) - prefix_length - strlen(Seperator);
       if (prefix_length == 0)
       {
         p_result->prefix = strdup("");
-      }
-      else
+      }else
       {
         p_result->prefix = (char*)malloc(prefix_length + 1);
         if (p_result->prefix == nullptr)
@@ -46,11 +42,11 @@ namespace trat
         strncpy(p_result->prefix, Word, prefix_length);
         p_result->prefix[prefix_length] = '\0';
       }
+      
       if (suffix_length == 0)
       {
         p_result->suffix = strdup("");
-      }
-      else
+      }else
       {
         p_result->suffix = (char*)malloc(suffix_length + 1);
         if (p_result->suffix == nullptr)
@@ -87,9 +83,7 @@ namespace trat
     char* checkCommandAndExtractParemeter(const char* Command, const char* Text)
     {
       if (Text == nullptr)
-      {
         return nullptr;
-      }
       PrefixSuffix *p_command_with_paremeter = breakDownWord(Text, " "); 
       if((p_command_with_paremeter == nullptr) || 
         (strcmp(p_command_with_paremeter -> prefix , Command) != 0)
@@ -104,9 +98,7 @@ namespace trat
     const char* extractFileNameFromLink(const char* Link)
     {
       if (Link == nullptr || std::strlen(Link) == 0)
-      {
         return nullptr;
-      }
 
       const char* last_slash = std::strrchr(Link, '/');
       if (last_slash != nullptr)
@@ -157,4 +149,24 @@ namespace trat
       }
     }
   }
-}
+
+  char* getFileExtensionFromName(const char* File_Name)
+  {
+    if (File_Name == nullptr)
+    {
+      return nullptr;
+    }
+    /* Yeah I know of the waist of two spaces, the structure of PrefixSuffix and the Prefix */
+    parser::PrefixSuffix *p_suffix_and_prefix = parser::breakDownWord(File_Name, ".");
+    char* extension = p_suffix_and_prefix -> suffix;
+    
+    free(p_suffix_and_prefix -> prefix);
+    p_suffix_and_prefix -> prefix = nullptr;
+    free(p_suffix_and_prefix);
+    p_suffix_and_prefix = nullptr;
+
+    return extension;
+  }
+  
+} //namespace  parser
+  

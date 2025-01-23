@@ -1,3 +1,7 @@
+When testing, trying to execute a command that opens a buffer, like nano, causes the program to crash, because a session is needed,
+this is simply just playing and toying around with telegram Bot APIs, using HTTPS and parsing messages, so this crashes the system and the bot, which is really really dangerous, I must find a way to circumvent the issue, either diverting this kind of command,
+into a proper session, or being careful knwoing this weakness of trat.
+
 When using the /download command, if the link is not valid, empty, or dummy the downnload does not fail and the thread does not detach, this must be fixed.
 
 

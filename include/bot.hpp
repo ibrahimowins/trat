@@ -3,11 +3,14 @@
 #ifndef BOT_HPP
 #define BOT_HPP
 
-#include <telebot-types.h>
+#include <iostream>
+
 #include <telebot.h>
 #include <cstdint>
 #include <cstring>  // For strdup
 #include "shell.hpp"
+#include "parser.hpp"
+#include "networking.hpp"
 
 #define NUMBER_RECOGNIZED_COMMANDS 3
 
@@ -26,6 +29,7 @@ namespace trat {
     
     Shell shell;                          
 
+    bool handlingBinaries;
     const size_t numberCommands = 3;    
     const char* commands[NUMBER_RECOGNIZED_COMMANDS] = 
     {
@@ -52,12 +56,16 @@ namespace trat {
 
     bool checkIfCommand(const char* Message);
     /* Handling Commands Methods */
+    
     void handleDownloadCommand(const char* Telegram_Message_Text);  
     void handleTextBasedCommand(const char* Telegram_Message_Text, const char* Command,  char* Shell_Function_Callback_Result);
     void handleShellCommand(const char* Telegram_Message_Text);	
-	  void handleDocuments(telebot_document_t* P_Telebot_Document);
+	  
+    void handleDocuments(telebot_document_t* P_Telebot_Document);
     void handlePhotos(telebot_photo_t* P_Telebot_Photo); 
   
+    void handleUploads(telebot_document_t* P_Client_Upload);
+
     bool downloadFromChat(const char* File_Id, const char* File_Path);
   
     void listen();

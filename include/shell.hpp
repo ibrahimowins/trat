@@ -1,10 +1,14 @@
 /* trat/include/shell.hpp */
 #ifndef SHELL_HPP
 #define SHELL_HPP
+#include <boost/process.hpp>
+#include <sstream>
+#include <filesystem>
+#include <cstdlib>
 
 #include <cstring>
 #include <iostream>
-#define SHELL_RESPONSE_BUFFER_SIZE
+#include "parser.hpp"
 
 namespace trat 
 {
@@ -34,6 +38,7 @@ namespace trat
         
     /* Its reference must be passed to ShellResponse_destroy(ShellResponse *P_Shell_Response) to clean up */
     ShellResponse executeShellCommand(const char* Command); 
+    bool isExecutable(const char* File_Name);
   }; //class Shell
 } // namespace trat
 #endif // SHELL_HPP

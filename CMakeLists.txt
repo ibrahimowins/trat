@@ -12,8 +12,13 @@ include_directories(include)
 
 file(GLOB BOT_SOURCES
     src/Bot/*.cpp
-    src/*.cpp
-    src/Shell/*.cpp
+    
+    src/networking.cpp
+    src/parser.cpp
+    src/main.cpp
+    
+    src/Shell/shell.cpp
+
 )
 
 # Find and link Boost libraries

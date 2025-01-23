@@ -8,9 +8,9 @@ namespace trat
   Bot::Bot(const char* Token, const int64_t& Client_Id)
   :token(strdup(Token)),
    clientId(Client_Id),
+   handlingBinaries(false),
    shell(Shell(this))
   {
-
     try
     {
       if (telebot_create(&handle, token) != TELEBOT_ERROR_NONE)  // Pass address of p_handle
@@ -40,5 +40,4 @@ namespace trat
     }
     return true;
   }
-
 }  // namespace trat

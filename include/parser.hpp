@@ -2,7 +2,13 @@
 #ifndef TRAT__PARSER_HPP
 #define TRAT__PARSER_HPP
 
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
 #include <cstring>
+#include <string>
+#include <filesystem>
+
 
 namespace trat
 {
@@ -24,7 +30,8 @@ namespace trat
     const char* extractFileNameFromLink(const char* Link);
     const char* extractFileExtensionFromLink(const char* Link);
     const char* constructFilePath(const char* Link);  
-
-  }
-}
+    
+    char* getFileExtensionFromName(const char* File_Name);  
+  }//namespace parser
+} //namespace trat 
 #endif //TRAT__PARSER_HPP
