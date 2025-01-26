@@ -1,3 +1,24 @@
+File	Issue	Fix
+listen.cpp	Memory leak in precieved_command	Clean up precieved_command in all code paths.
+listen.cpp	Race condition in async tasks	Use a mutex to protect shared resources.
+listen.cpp	Unnecessary blocking with future.get()	Avoid blocking or store futures for later cleanup.
+listen.cpp	Unhandled telebot_put_updates failure	Check return value and handle errors.
+handling.cpp	Memory leak in handleDownloadCommand	Ensure all allocated memory is freed in error paths.
+handling.cpp	Uninitialized message_buffer	Initialize message_buffer to ensure null-termination.
+handling.cpp	Null pointer dereference in handleTextBasedCommand	Add null check for Shell_Function_Callback_Result.
+
+
+
+
+
+The parser module is probably bug free
+
+There is a problem with listen method logic.
+
+
+incomplete function in the networking module, the file name of the file is extracted from the link, but the path is not fullconstructed.
+
+
 When testing, trying to execute a command that opens a buffer, like nano, causes the program to crash, because a session is needed,
 this is simply just playing and toying around with telegram Bot APIs, using HTTPS and parsing messages, so this crashes the system and the bot, which is really really dangerous, I must find a way to circumvent the issue, either diverting this kind of command,
 into a proper session, or being careful knwoing this weakness of trat.

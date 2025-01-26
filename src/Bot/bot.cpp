@@ -1,6 +1,5 @@
 /* trat/src/Bot/bot.cpp */
 #include "../../include/bot.hpp"
-#include <iostream>
 
 namespace trat 
 {
@@ -8,19 +7,14 @@ namespace trat
   Bot::Bot(const char* Token, const int64_t& Client_Id)
   :token(strdup(Token)),
    clientId(Client_Id),
-   handlingBinaries(false),
    shell(Shell(this))
   {
-    try
+    if (telebot_create(&handle, token) != TELEBOT_ERROR_NONE)
     {
-      if (telebot_create(&handle, token) != TELEBOT_ERROR_NONE)  // Pass address of p_handle
-        throw std::runtime_error("Failed to create Telebot handler.");
+      printf("failed to create bot");
+      exit(EXIT_FAILURE);
     }
-    catch (const std::exception& e)
-    {
-      std::cerr << "Exception in Bot constructor: " << e.what() << std::endl;
-      throw;  // Re-throw the exception after logging
-    }
+  
   }
   Bot::~Bot()
   {

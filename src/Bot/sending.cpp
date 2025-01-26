@@ -3,17 +3,6 @@
 
 namespace trat
 {
-  /*A wrapper over 
-  telebot_send_message(
-          telebot_handler_t handle,
-          long long int chat_id,
-          const char *text, 
-          const char *parse_mode, 
-          bool disable_web_page_preview,
-          bool disable_notification, 
-          int reply_to_message_id, 
-          const char *reply_markup  
-              )*/
   bool Bot::sendMessage(const char* Message)
   {
     if (Message == nullptr)
@@ -29,18 +18,6 @@ namespace trat
     return true;
   }
 
-  /*
-  telebot_send_photo(
-  telebot_handler_t handle, 
-  long long int chat_id,
-  const char *photo, 
-  bool is_file, 
-  const char *caption,
-  const char *parse_mode,
-  bool disable_notification, 
-  int reply_to_message_id, 
-  const char *reply_markup)
-  */
   bool Bot::sendPhoto(const char* File_Path)
   {
     if (File_Path == nullptr)
@@ -57,7 +34,7 @@ namespace trat
 
   bool Bot::sendDocument(const char* Document_Path)
   {
-    if (Document_Path == nullptr)
+    if (!Document_Path)
     {
       return false;
     }

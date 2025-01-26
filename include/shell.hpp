@@ -37,8 +37,8 @@ namespace trat
     bool executeShellCommandWithoutResponse(const char* Command);
         
     /* Its reference must be passed to ShellResponse_destroy(ShellResponse *P_Shell_Response) to clean up */
-    ShellResponse executeShellCommand(const char* Command); 
-    bool isExecutable(const char* File_Name);
+    ShellResponse *executeShellCommand(const char* Command); 
+
   }; //class Shell
 } // namespace trat
 #endif // SHELL_HPP

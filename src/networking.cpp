@@ -1,68 +1,77 @@
 /* trat/src/networking.cpp */
 
 #include "../include/networking.hpp"
+#include <cstring>
+
+#define NUMBER_OF_AVAILABLE_LINK_PREFIXES 6
 
 namespace trat
 {
   namespace networking
   {
-    void setFileNameFromFullPath(const char *Full_Path, char **File_Name, char Separator)
+   
+    const char* link_prefixes[] = {
+                                    "http",
+                                    "https",
+                                    "ftp",
+                                    "fpts",
+                                    "sftp",
+                                    "file"
+                                 };
+    bool checkLinkValidity(const char* Link)
     {
-      const char *separator_pos = strrchr(Full_Path, Separator);
-
-      if (separator_pos)
+      char* link_prefix = parser::getPrefixFromString(Link, ':');
+      for (size_t i = 0; i < NUMBER_OF_AVAILABLE_LINK_PREFIXES; ++i)
       {
-        *File_Name = strdup(separator_pos + 1);
-        if (*File_Name == nullptr)
+        if( strcmp(link_prefix, link_prefixes[i] ) == 0)
         {
-          *File_Name = nullptr;
+          return true;
         }
       }
-      else
-      {
-        *File_Name = strdup(Full_Path);
-        if (*File_Name == nullptr)
-        {
-          *File_Name = nullptr;
-        }
-      }
-    }
-
+      return false;
+    }//bool checkLinkValidity(const char* Link)
+    
     void writeCallback(void *Data, size_t Size_Data_Element, size_t Number_Data_Elements, FILE *Output_Stream)
     {
       fwrite(Data, Size_Data_Element, Number_Data_Elements, Output_Stream);
     }
 
-    NetworkingResponse curlDownload(const char* Url, const char* Output_File_Path)
+    NetworkingResponse *curlDownload(const char* Url, const char* Output_File_Path)
     {
       CURL* curl;
       CURLcode res;
       FILE* p_file = nullptr;
-      NetworkingResponse response = {false, nullptr, 0.0};
+      NetworkingResponse *p_response = (NetworkingResponse*)malloc(sizeof(NetworkingResponse));
+
       clock_t start, end;
 
       curl = curl_easy_init();
       if (!curl)
       {
-        response.errorLog = strdup("Failed to initialize curl");
-        return response;
+        p_response -> errorLog = parser::copyString("Failed to initialize curl");
+        return p_response;
       }
-      char* file_name;
-      setFileNameFromFullPath(Output_File_Path, &file_name, FILE_PATH_SEPARATOR);
+      char* link = parser::copyString(Url);
+      char* file_name = parser::getFileNameFromLink(link);
+      
+      parser::cleanString(link);
 
       if (!file_name)
       {
-        response.errorLog = strdup("Failed to allocate memory for filename");
-        return response;
+        p_response -> errorLog = parser::copyString("Failed to allocate memory for filename");
+        return p_response;
       }
+      
+      char* full_file_name = parser::constructFilePath(Output_File_Path, file_name);
+      parser::cleanString(file_name);
 
-      p_file = fopen(file_name, "wb");
+      p_file = fopen(full_file_name, "wb");
       if (!p_file)
       {
         curl_easy_cleanup(curl);
-        response.errorLog = strdup("Failed to open file");
-        free(file_name);
-        return response;
+        p_response -> errorLog = parser::copyString("Failed to open file");
+        parser::cleanString(full_file_name);
+        return p_response;
       }
 
       curl_easy_setopt(curl, CURLOPT_URL, Url);
@@ -75,24 +84,35 @@ namespace trat
 
       end = clock();
 
-      response.timeInSeconds = ((double)(end - start)) / CLOCKS_PER_SEC;
+      p_response -> timeInSeconds = ((double)(end - start)) / CLOCKS_PER_SEC;
 
       if (res != CURLE_OK)
       {
-        response.errorLog = strdup(curl_easy_strerror(res));
-        response.isSuccessful = false;
+        p_response -> errorLog = parser::copyString(curl_easy_strerror(res));
       }
       else
       {
-        response.errorLog = strdup("");
-        response.isSuccessful = true;
+        p_response -> errorLog = nullptr;
       }
       fclose(p_file);
       curl_easy_cleanup(curl);
       free(file_name);
       file_name = nullptr;
 
-      return response;
+      return p_response;
+    } //NetworkingResponse *curlDownload(const char* Url, const char* Output_File_Path)
+
+    void NetworkingResponseDestroy(NetworkingResponse *P_Networking_Response)
+    {
+      if(!P_Networking_Response)  { return ;}
+      if((P_Networking_Response -> errorLog) != nullptr) 
+      { 
+        parser::cleanString(P_Networking_Response -> errorLog);
+      }
+      free(P_Networking_Response);
+      P_Networking_Response = nullptr;
     }
-  }
-}
+  
+  } //namespace networking
+
+} //namespace trat
