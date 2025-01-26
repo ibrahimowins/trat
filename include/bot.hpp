@@ -7,6 +7,7 @@
 
 #define CURRENT_PATH std::filesystem::current_path().string().c_str() 
 #include <telebot.h>
+#include <mutex>
 #include <cstdint>
 #include <cstring>  // For strdup
 #include "shell.hpp"
@@ -44,7 +45,7 @@ namespace trat {
        "/upload",
        */
     };
-
+    std::mutex sending_mutex;
     Bot(const char* Token, const int64_t& Client_Id); 
     ~Bot();                                          
   

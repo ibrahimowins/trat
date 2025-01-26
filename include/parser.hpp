@@ -9,6 +9,7 @@
 #include <string>
 #include <filesystem>
 
+#include <algorithm> // For std::find and std::partition
 
 namespace trat
 {

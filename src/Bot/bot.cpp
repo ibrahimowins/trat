@@ -5,13 +5,14 @@ namespace trat
 {
 
   Bot::Bot(const char* Token, const int64_t& Client_Id)
-  :token(strdup(Token)),
+  :token(parser::copyString(Token)),
    clientId(Client_Id),
    shell(Shell(this))
   {
     if (telebot_create(&handle, token) != TELEBOT_ERROR_NONE)
     {
       printf("failed to create bot");
+      parser::copyString(token);
       exit(EXIT_FAILURE);
     }
   

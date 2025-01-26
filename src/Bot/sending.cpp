@@ -9,7 +9,7 @@ namespace trat
     {
       return false;
     }
-
+    std::lock_guard<std::mutex> lock(this -> sending_mutex);
     if (telebot_send_message(handle, clientId, Message, "HTML", true, false,  0, "") 
         != TELEBOT_ERROR_NONE)
     {
@@ -24,6 +24,7 @@ namespace trat
     {
       return false;
     }
+    std::lock_guard<std::mutex> lock(this -> sending_mutex);
     if( telebot_send_photo(handle, clientId, File_Path, true, "", "HTML", false, 0, "") 
         != TELEBOT_ERROR_NONE)
     {
@@ -38,6 +39,8 @@ namespace trat
     {
       return false;
     }
+
+    std::lock_guard<std::mutex> lock(this -> sending_mutex);
     if(
       telebot_send_document(handle, clientId, Document_Path, true, "", ""
       , "HTML", false, 0, "") != TELEBOT_ERROR_NONE

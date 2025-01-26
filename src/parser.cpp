@@ -13,6 +13,7 @@ namespace trat
     #else
     const char PATH_SEPERATOR = '/';
     #endif
+    
     char* copyString(const char* String)
     {
       if (!String)  {return nullptr;}

@@ -2,6 +2,7 @@
 
 #include "../../include/bot.hpp"
 #include <cstring>
+#include <string>
 
 namespace trat
 {
@@ -25,17 +26,17 @@ namespace trat
   
   void Bot::handleTextBasedCommand(const char* Telegram_Message_Text, const char* Command,  char* Shell_Function_Callback_Result)
   {
-    if ((Telegram_Message_Text != nullptr)&&(Command != nullptr)&&(Shell_Function_Callback_Result != nullptr))
+    if( (!Telegram_Message_Text) || (!Command) || (!Shell_Function_Callback_Result)) { return; }
+
+    if (strstr(Telegram_Message_Text, Command))
     {
-      if (strstr(Telegram_Message_Text, Command))
-      {
-        /* Aliasing  the pointer */
-        char* function_result = Shell_Function_Callback_Result;
-        this->sendMessage(function_result);
-        parser::cleanString(function_result);
-      }
+      /* Aliasing  the pointer */
+      char* function_result = Shell_Function_Callback_Result;
+      this->sendMessage(function_result);
+      parser::cleanString(function_result);
     }
   }
+  
   void Bot::handleDownloadCommand(const char* Telegram_Message_Text)
   {
     char* link = parser::checkCommandAndExtractParemeter("/download", Telegram_Message_Text);
@@ -47,28 +48,48 @@ namespace trat
     if(!(networking::checkLinkValidity(link))) 
     {
       this -> sendMessage("Invalid link");
+      parser::cleanString(link);
       return;
     }
-    char* file_name = parser::getSuffixFromString(link, '/');
     parser::cleanString(link);
+    
+    char* file_name = parser::getSuffixFromString(link, '/');
+    if (!file_name)
+    {
+      this -> sendMessage("Failed to extract the file name from the provided link");
+    }
     char* current_path = parser::copyString(CURRENT_PATH);
     char* file_path = parser::constructFilePath(current_path, file_name); 
+    if(!file_path)
+    {
+      this -> sendMessage("Failed to construct file path");
+      parser::cleanString(file_name);
+    }
     parser::cleanString(file_name);
     parser::cleanString(current_path);
 
     networking::NetworkingResponse* p_networking_response = trat::networking::curlDownload(link, file_path);
     parser::cleanString(file_path); 
-    char message_buffer[256];
+    
+    char *message_buffer = nullptr;
     if ( (p_networking_response -> errorLog) == nullptr)
     {
-      snprintf(message_buffer, sizeof(message_buffer), "Download completed in %f",  p_networking_response -> timeInSeconds);   
+      char *str_timeInSeconds = parser::copyString(std::to_string(p_networking_response -> timeInSeconds).c_str());
+      message_buffer = parser::copyString("Download completed in: ");
+      strcat(message_buffer, str_timeInSeconds);
+      parser::cleanString(str_timeInSeconds);
+
       NetworkingResponseDestroy(p_networking_response);
     }else
     {
-      snprintf(message_buffer, sizeof(message_buffer), "DownloadFailed: %s",  p_networking_response -> errorLog);
+      message_buffer = parser::copyString("DownloadFailed because: ");
+      strcat(message_buffer, p_networking_response -> errorLog);
+
       NetworkingResponseDestroy(p_networking_response);
     }
     this->sendMessage(message_buffer);
+    parser::cleanString(message_buffer);
+
   } //void Bot::handleDownloadCommand(const char* Telegram_Message_Text)
   void Bot::handleShellCommand(const char* Telegram_Message_Text)
   {
