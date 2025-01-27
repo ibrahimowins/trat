@@ -20,7 +20,9 @@ namespace trat
                                  };
     bool checkLinkValidity(const char* Link)
     {
-      char* link_prefix = parser::getPrefixFromString(Link, ':');
+      if(!Link) {return false;}
+      if(parser::isSubStringPartOfString("://", Link) == -1) {return false;}
+      char* link_prefix = parser::getPrefixFromString(Link, ":");
       for (size_t i = 0; i < NUMBER_OF_AVAILABLE_LINK_PREFIXES; ++i)
       {
         if( strcmp(link_prefix, link_prefixes[i] ) == 0)

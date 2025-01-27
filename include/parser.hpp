@@ -2,6 +2,7 @@
 #ifndef TRAT__PARSER_HPP
 #define TRAT__PARSER_HPP
 
+#include <cstdint>
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,7 +11,11 @@
 #include <filesystem>
 
 #include <algorithm> // For std::find and std::partition
-
+#ifdef WIN32 
+# define PATH_SEPERATOR '\\'
+#else
+# define PATH_SEPERATOR '/'
+#endif
 namespace trat
 {
   namespace parser 
@@ -18,19 +23,21 @@ namespace trat
     char* copyString(const char* String);
     
     void cleanString(char* String);
+    /* Both of these functions return -1 if that is not the case, otherwise they return the position of the Char, or the first Char of the sub string */
+    int isCharInWord(const char Char, const char* Word);
+    int isSubStringPartOfString(const char* Sub_String, const char* String );
 
     /* Each of these functions requires void cleanString(char* String) after use */
     char* getInvertedString(const char* String);
     
-    char* getPrefixFromString(const char* String, const char SeperatorChar);
-    char* getSuffixFromString(const char* String, const char SeperatorChar);
+    char* getPrefixFromString(const char* String, const char* Seperator);
 
+    char* getSuffixFromString(const char* String, const char* Seperator);
+    
     /* invert the name and get the prefix, reinvert */
     char* getExtension(const char* File_Name);
 
     char* getFileNameFromLink(char* Link);
-    
-    char* constructFilePath(const char* Path, const char* File_Name, const char Path_Seperator);
     
     typedef struct PrefixSuffix
     {
@@ -44,11 +51,8 @@ namespace trat
         /* The result of this needs to be freed */ 
     char* checkCommandAndExtractParemeter(const char* Command, const char* Text);
     
-    const char* extractFileNameFromLink(const char* Link);
-    const char* extractFileExtensionFromLink(const char* Link);
     
     char* constructFilePath(const char* Path, const char* File_Name);
-    char* getFileExtensionFromName(const char* File_Name);  
 
   }//namespace parser
 

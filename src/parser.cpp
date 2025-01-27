@@ -8,12 +8,7 @@ namespace trat
 {
   namespace parser
   {
-    #if WIN32 
-    const char PATH_SEPERATOR = '\\';
-    #else
-    const char PATH_SEPERATOR = '/';
-    #endif
-    
+
     char* copyString(const char* String)
     {
       if (!String)  {return nullptr;}
@@ -24,6 +19,7 @@ namespace trat
       if (!copied_string) {return nullptr;}
 
       memcpy(copied_string, String, string_size); 
+      copied_string[string_size] = '\0'; // Ensure null-termination
       return copied_string;
     }
     
@@ -35,7 +31,37 @@ namespace trat
         String = nullptr;
       }
     }
-    
+   
+    int isCharInWord(const char Char, const char* Word) 
+    {
+      if (!Word || Char == '\0') { return -1; }
+
+      for (size_t i = 0; Word[i] != '\0'; ++i) 
+      {
+        if (Word[i] == Char) { return (int)i; }
+      }
+      return -1;
+    }
+
+    int isSubStringPartOfString(const char* Sub_String, const char* String) 
+    {
+      if (!Sub_String || !String) { return -1; }
+
+      size_t sub_string_size = strlen(Sub_String);
+      size_t string_size = strlen(String);
+
+      if (sub_string_size > string_size) { return -1; }
+
+      for (size_t i = 0; i <= string_size - sub_string_size; ++i) 
+      {
+        if (strncmp(String + i, Sub_String, sub_string_size) == 0) 
+        {
+          return (int)i;
+        }
+      }
+      return -1;
+    }
+
     char* getInvertedString(const char* String)
     {
       if(!String) { return nullptr;}
@@ -54,42 +80,36 @@ namespace trat
       return inverted_string_result;
     }
   
-    char* getPrefixFromString(const char* String, const char SeperatorChar)
+    char* getPrefixFromString(const char* String, const char* Seperator)
     {
-      if (!String){ return nullptr; }
-
-      size_t seperator_position = 0;
-      size_t string_size = std::strlen(String);
-  
-      for (size_t i = 0; i < string_size; ++i)
-      {
-        if(String[i] == SeperatorChar)
-        {
-          seperator_position = i;
-          break;
-        }
-      }
-      if (seperator_position == 0)
+      if ((!String) || (!Seperator)){ return nullptr; }
+      int seperator_position = isSubStringPartOfString(Seperator, String);
+      if(seperator_position == -1)
       {
         return nullptr;
       }
-      char* prefix = (char*)malloc(sizeof(char) * seperator_position);
-      prefix[seperator_position] = '\0';
-      for (size_t i = 0; i < seperator_position; ++i)
-      {
-        prefix[i] = String[i];
-      }
+      char* prefix = (char*)malloc(sizeof(char) * (seperator_position + 1));
+      if (!prefix) { return nullptr; }
+      strncpy(prefix, String, seperator_position);
+      prefix[seperator_position] = '\0'; // Ensure null-termination
       return prefix;
     }
-    char* getSuffixFromString(const char* String, const char SeperatorChar)
+
+    char* getSuffixFromString(const char* String, const char* Seperator)
     {
-      char* invertedString = getInvertedString(String);
-      char* prefix = getPrefixFromString(String, SeperatorChar);
-      cleanString(invertedString);
-      char* suffix = getInvertedString(prefix);
-      cleanString(prefix);
+      if((!String) || (!Seperator)) { return nullptr; }
+      int seperator_length = strlen(Seperator);
+      int string_length = strlen(String);
+      if(seperator_length > string_length ) { return nullptr; }
+      int suffix_position = isSubStringPartOfString(Seperator, String) + seperator_length;
+      int suffix_length = string_length - suffix_position;
+      char* suffix = (char*)malloc(sizeof(char) * (suffix_length + 1));
+      if(!suffix) {return nullptr;}
+      strncpy(suffix, String + suffix_position, suffix_length);
+      suffix[suffix_length] = '\0'; 
       return suffix;
     }
+    
     char* constructFilePath(const char* Path, const char* File_Name)
     {
       if ( (Path == nullptr) || (File_Name == nullptr) )
@@ -108,20 +128,23 @@ namespace trat
       }
       size_t path_size = std::strlen(path);
 
-      char* path_with_seperator = (char*)malloc(sizeof(char) * (path_size) + 1 + 1);
-      path_with_seperator[path_size + 1] = '\0';
-      path_with_seperator[path_size] = PATH_SEPERATOR;
-      for (size_t i = 0; i < path_size; i++)
+      char* path_with_seperator = (char*)malloc(sizeof(char) * (path_size + 1 + std::strlen(file_name) + 1));
+      if (!path_with_seperator) 
       {
-        path_with_seperator[i] = path[i];
+        parser::cleanString(path);
+        parser::cleanString(file_name);
+        return nullptr;
       }
+      strcpy(path_with_seperator, path);
+      path_with_seperator[path_size] = PATH_SEPERATOR;
+      path_with_seperator[path_size + 1] = '\0';
       strcat(path_with_seperator, file_name);
-      free(file_name);
-      file_name = nullptr;
-      free(path);
-      path = nullptr;
+      
+      parser::cleanString(file_name);
+      parser::cleanString(path);
       return path_with_seperator;
     }
+
     char* getFileNameFromLink(char* Link)
     {
       char* inverted_link = getInvertedString(Link);
@@ -129,9 +152,9 @@ namespace trat
       {
         return nullptr;
       }
-      char* inverted_file_name = getPrefixFromString(inverted_link, '/');
-      free(inverted_link);
-      inverted_link = nullptr;
+      char* inverted_file_name = getPrefixFromString(inverted_link, "/");
+      cleanString(inverted_link);
+      
       if(!inverted_file_name)
       {
         return nullptr;
@@ -142,45 +165,37 @@ namespace trat
       return result;
     }
     
-    PrefixSuffix *breakWordIntoPrefixSuffix(const char* Word, const char SeperatorChar)
+    PrefixSuffix *breakWordIntoPrefixSuffix(const char* Word, const char* Root)
     {
-      if(!Word) {return nullptr;}
+      if((!Word) || (!Root)) {return nullptr;}
       PrefixSuffix *p_result = (PrefixSuffix*)malloc(sizeof(PrefixSuffix));
       if (!p_result)  { return nullptr; }
-      p_result -> prefix = getPrefixFromString(Word, SeperatorChar);
-      if(!(p_result -> prefix)) 
+      
+      p_result->prefix = getPrefixFromString(Word, Root);
+      p_result->suffix = getSuffixFromString(Word, Root);
+      
+      if(!(p_result->prefix) || !(p_result->suffix)) 
       {
+        if (p_result->prefix) { parser::cleanString(p_result->prefix); }
+        if (p_result->suffix) { parser::cleanString(p_result->suffix); }
         free(p_result);
-        p_result = nullptr;
-        return nullptr;
-      }
-      p_result -> suffix = getSuffixFromString(Word, SeperatorChar);
-      if(!(p_result -> suffix)) 
-      {
-        parser::cleanString(p_result -> prefix);
-        free(p_result);
-        p_result = nullptr;
         return nullptr;
       }
       return p_result;
     }
+
     void PrefixSuffixDestroy(PrefixSuffix* P_Prefix_Suffix)
     {
       if(!P_Prefix_Suffix)  {return;}
-      if( !(P_Prefix_Suffix -> prefix) && !(P_Prefix_Suffix -> suffix) )
+      if(P_Prefix_Suffix->prefix) 
       {
-        return;
+        parser::cleanString(P_Prefix_Suffix->prefix);
       }
-      if( !(P_Prefix_Suffix -> prefix)  )
+      if(P_Prefix_Suffix->suffix) 
       {
-        if(!(P_Prefix_Suffix -> suffix)){ return; }
-        parser::cleanString(P_Prefix_Suffix -> suffix);
+        parser::cleanString(P_Prefix_Suffix->suffix);
       }
-      if( !(P_Prefix_Suffix -> suffix)  )
-      {
-        if(!(P_Prefix_Suffix -> prefix)){ return; }
-        parser::cleanString(P_Prefix_Suffix -> prefix);
-      }
+      free(P_Prefix_Suffix);
     }
     
     char* checkCommandAndExtractParemeter(const char* Command, const char* Text)
@@ -192,7 +207,7 @@ namespace trat
       if (text_length <= command_length ) { return nullptr; }
       size_t parameter_length = text_length - command_length;
 
-      char* extracted_command = getPrefixFromString(Text, ' ');
+      char* extracted_command = getPrefixFromString(Text, " " );
       if (!extracted_command) { return nullptr; }
       
       if ( strcmp(Command, extracted_command) != 0)
@@ -201,11 +216,13 @@ namespace trat
         return nullptr;
       }
       char* parameter = (char*)malloc(sizeof(char) * (parameter_length + 1 ));
-      parameter[parameter_length] = '\0';
-      for (size_t i = command_length + 1; i < text_length; ++i)
+      if (!parameter) 
       {
-        parameter[i - (command_length + 1)] = Text[i];
+        cleanString(extracted_command);
+        return nullptr;
       }
+      strncpy(parameter, Text + command_length + 1, parameter_length);
+      parameter[parameter_length] = '\0';
       cleanString(extracted_command);
       return parameter;
     }
@@ -224,54 +241,5 @@ namespace trat
       return Link;
     }
 
-    const char* extractFileExtensionFromLink(const char* Link)
-    {
-      const char* file_name = extractFileNameFromLink(Link);
-      if (file_name == nullptr || std::strlen(file_name) == 0)
-      {
-        return nullptr;
-      }
-      const char* last_dot = std::strrchr(file_name, '.');
-      if (last_dot != nullptr && *(last_dot + 1) != '\0')
-      {
-        return last_dot + 1;
-      }
-      return nullptr;
-    }
-
-    const char* constructFilePath(const char* Link)
-    {
-      if (Link == nullptr || std::strlen(Link) == 0)
-      {
-        return nullptr;
-      }
-      const char* file_name = extractFileNameFromLink(Link);
-      if (file_name == nullptr || std::strlen(file_name) == 0)
-      {
-        return nullptr;
-      }
-      try
-      {
-        std::string current_path = std::filesystem::current_path().string();
-        std::string full_path = current_path + "/" + file_name;
-        char* result = new char[full_path.length() + 1];
-        std::strcpy(result, full_path.c_str());
-        return result;
-      }
-      catch (const std::exception& e)
-      {
-        return nullptr;
-      }
-    }
-  }
-
-  char* getFileExtensionFromName(const char* File_Name)
-  {
-    if(!File_Name)  { return nullptr;}
-    char* extension = parser::getSuffixFromString(File_Name, '.');
-    if (!extension) { return nullptr;}
-    return extension;
-  }
-  
+ }
 } //namespace  parser
-  

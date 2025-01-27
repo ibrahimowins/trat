@@ -12,18 +12,17 @@ namespace trat
     if (telebot_create(&handle, token) != TELEBOT_ERROR_NONE)
     {
       printf("failed to create bot");
-      parser::copyString(token);
-      exit(EXIT_FAILURE);
+      parser::cleanString(token);
+
     }
   
   }
   Bot::~Bot()
   {
     telebot_destroy(handle);  // Pass p_handle directly
-    if (token != nullptr)
+    if (!token)
     {
-      free(token);  // Free the allocated memory for the token
-      token = nullptr;
+      parser::cleanString(this -> token);
     }
   }
   

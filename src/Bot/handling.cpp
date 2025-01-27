@@ -10,7 +10,7 @@ namespace trat
   {
     if(!Message) {  return false; }
 
-    char* prefix = parser::getPrefixFromString(Message, ' ');
+    char* prefix = parser::getPrefixFromString(Message, " ");
     if (!prefix) { return false; }
     
     for (size_t i = 0; i < NUMBER_RECOGNIZED_COMMANDS; ++i)
@@ -53,7 +53,7 @@ namespace trat
     }
     parser::cleanString(link);
     
-    char* file_name = parser::getSuffixFromString(link, '/');
+    char* file_name = parser::getSuffixFromString(link, "/");
     if (!file_name)
     {
       this -> sendMessage("Failed to extract the file name from the provided link");

